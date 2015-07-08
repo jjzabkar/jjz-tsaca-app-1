@@ -1,0 +1,79 @@
+{
+    "relationships": [],
+    "fields": [
+        {
+            "fieldId": 1,
+            "fieldName": "arrivalEnabled",
+            "fieldType": "Boolean",
+            "fieldNameCapitalized": "ArrivalEnabled",
+            "fieldNameUnderscored": "arrival_enabled",
+            "fieldInJavaBeanMethod": "ArrivalEnabled",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 2,
+            "fieldName": "routeId",
+            "fieldType": "String",
+            "fieldNameCapitalized": "RouteId",
+            "fieldNameUnderscored": "route_id",
+            "fieldInJavaBeanMethod": "RouteId",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 3,
+            "fieldName": "routeLongName",
+            "fieldType": "String",
+            "fieldNameCapitalized": "RouteLongName",
+            "fieldNameUnderscored": "route_long_name",
+            "fieldInJavaBeanMethod": "RouteLongName",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 4,
+            "fieldName": "routeShortName",
+            "fieldType": "String",
+            "fieldNameCapitalized": "RouteShortName",
+            "fieldNameUnderscored": "route_short_name",
+            "fieldInJavaBeanMethod": "RouteShortName",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 5,
+            "fieldName": "scheduledArrivalTime",
+            "fieldType": "Long",
+            "fieldNameCapitalized": "ScheduledArrivalTime",
+            "fieldNameUnderscored": "scheduled_arrival_time",
+            "fieldInJavaBeanMethod": "ScheduledArrivalTime",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 6,
+            "fieldName": "scheduledDepartureTime",
+            "fieldType": "Long",
+            "fieldNameCapitalized": "ScheduledDepartureTime",
+            "fieldNameUnderscored": "scheduled_departure_time",
+            "fieldInJavaBeanMethod": "ScheduledDepartureTime",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 7,
+            "fieldName": "status",
+            "fieldType": "String",
+            "fieldNameCapitalized": "Status",
+            "fieldNameUnderscored": "status",
+            "fieldInJavaBeanMethod": "Status",
+            "fieldValidate": false
+        }
+    ],
+    "fieldsContainOwnerManyToMany": false,
+    "fieldsContainOwnerOneToOne": false,
+    "fieldsContainOneToMany": false,
+    "fieldsContainLocalDate": false,
+    "fieldsContainCustomTime": false,
+    "fieldsContainBigDecimal": false,
+    "fieldsContainDateTime": false,
+    "fieldsContainDate": false,
+    "dto": "no",
+    "pagination": "no",
+    "validation": false
+}

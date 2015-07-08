@@ -1,0 +1,37 @@
+{
+    "relationships": [
+        {
+            "relationshipId": 1,
+            "relationshipName": "oneBusAwayResponse",
+            "relationshipNameCapitalized": "OneBusAwayResponse",
+            "relationshipFieldName": "oneBusAwayResponse",
+            "otherEntityName": "oneBusAwayResponse",
+            "relationshipType": "one-to-one",
+            "otherEntityNameCapitalized": "OneBusAwayResponse",
+            "ownerSide": false,
+            "otherEntityRelationshipName": "oneBusAwayData"
+        },
+        {
+            "relationshipId": 2,
+            "relationshipName": "oneBusAwayEntry",
+            "relationshipNameCapitalized": "OneBusAwayEntry",
+            "relationshipFieldName": "oneBusAwayEntry",
+            "otherEntityName": "oneBusAwayEntry",
+            "relationshipType": "one-to-one",
+            "otherEntityNameCapitalized": "OneBusAwayEntry",
+            "ownerSide": true
+        }
+    ],
+    "fields": [],
+    "fieldsContainOwnerManyToMany": false,
+    "fieldsContainOwnerOneToOne": true,
+    "fieldsContainOneToMany": false,
+    "fieldsContainLocalDate": false,
+    "fieldsContainCustomTime": false,
+    "fieldsContainBigDecimal": false,
+    "fieldsContainDateTime": false,
+    "fieldsContainDate": false,
+    "dto": "no",
+    "pagination": "no",
+    "validation": false
+}

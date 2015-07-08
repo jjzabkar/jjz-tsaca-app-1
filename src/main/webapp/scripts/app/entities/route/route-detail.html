@@ -1,0 +1,47 @@
+
+<div>
+    <h2><span>Route</span> {{route.id}}</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span>RouteId</span>
+                    </td>
+                    <td>
+                        <input type="text" class="input-sm form-control" value="{{route.routeId}}" readonly>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span>LongName</span>
+                    </td>
+                    <td>
+                        <input type="text" class="input-sm form-control" value="{{route.longName}}" readonly>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span>ShortName</span>
+                    </td>
+                    <td>
+                        <input type="text" class="input-sm form-control" value="{{route.shortName}}" readonly>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button type="submit"
+            ui-sref="route"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+</div>
