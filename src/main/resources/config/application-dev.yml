@@ -51,3 +51,6 @@ cache:
     timeToLiveSeconds: 3600
     ehcache:
         maxBytesLocalHeap: 16M
+
+onebusaway:
+    apiKey: FROM_APPLICATION_DEV_YML
