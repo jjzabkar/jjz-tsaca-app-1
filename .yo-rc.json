@@ -1,0 +1,21 @@
+{
+  "generator-jhipster": {
+    "baseName": "jjztsacaapp1",
+    "packageName": "com.jjz.tsaca",
+    "packageFolder": "com/jjz/tsaca",
+    "authenticationType": "session",
+    "hibernateCache": "ehcache",
+    "clusteredHttpSession": "no",
+    "websocket": "no",
+    "databaseType": "sql",
+    "devDatabaseType": "h2Memory",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": "no",
+    "useCompass": false,
+    "buildTool": "maven",
+    "frontendBuilder": "grunt",
+    "javaVersion": "8",
+    "enableTranslation": false,
+    "rememberMeKey": "7d7f3a93f13c894e8dcc8297be55e298a036e073"
+  }
+}

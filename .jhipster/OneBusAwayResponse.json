@@ -1,0 +1,27 @@
+{
+    "relationships": [
+        {
+            "relationshipId": 1,
+            "relationshipName": "oneBusAwayData",
+            "relationshipNameCapitalized": "OneBusAwayData",
+            "relationshipFieldName": "oneBusAwayData",
+            "otherEntityName": "oneBusAwayData",
+            "relationshipType": "one-to-one",
+            "otherEntityNameCapitalized": "OneBusAwayData",
+            "ownerSide": true
+        }
+    ],
+    "fields": [],
+    "fieldsContainOwnerManyToMany": false,
+    "fieldsContainOwnerOneToOne": true,
+    "fieldsContainOneToMany": false,
+    "fieldsContainLocalDate": false,
+    "fieldsContainCustomTime": false,
+    "fieldsContainBigDecimal": false,
+    "fieldsContainDateTime": false,
+    "fieldsContainDate": false,
+    "changelogDate": "20150702235339",
+    "dto": "no",
+    "pagination": "no",
+    "validation": false
+}

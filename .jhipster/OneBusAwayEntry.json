@@ -1,0 +1,37 @@
+{
+    "relationships": [
+        {
+            "relationshipId": 1,
+            "relationshipName": "oneBusAwayData",
+            "relationshipNameCapitalized": "OneBusAwayData",
+            "relationshipFieldName": "oneBusAwayData",
+            "otherEntityName": "oneBusAwayData",
+            "relationshipType": "one-to-one",
+            "otherEntityNameCapitalized": "OneBusAwayData",
+            "ownerSide": false,
+            "otherEntityRelationshipName": "oneBusAwayData"
+        }
+    ],
+    "fields": [
+        {
+            "fieldId": 1,
+            "fieldName": "stopId",
+            "fieldType": "String",
+            "fieldNameCapitalized": "StopId",
+            "fieldNameUnderscored": "stop_id",
+            "fieldInJavaBeanMethod": "StopId",
+            "fieldValidate": false
+        }
+    ],
+    "fieldsContainOwnerManyToMany": false,
+    "fieldsContainOwnerOneToOne": false,
+    "fieldsContainOneToMany": false,
+    "fieldsContainLocalDate": false,
+    "fieldsContainCustomTime": false,
+    "fieldsContainBigDecimal": false,
+    "fieldsContainDateTime": false,
+    "fieldsContainDate": false,
+    "dto": "no",
+    "pagination": "no",
+    "validation": false
+}

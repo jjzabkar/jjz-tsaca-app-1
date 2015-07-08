@@ -1,0 +1,65 @@
+{
+    "relationships": [
+        {
+            "relationshipId": 1,
+            "relationshipName": "route",
+            "relationshipNameCapitalized": "Route",
+            "relationshipFieldName": "route",
+            "otherEntityName": "route",
+            "relationshipType": "many-to-many",
+            "otherEntityNameCapitalized": "Route",
+            "otherEntityField": "id",
+            "ownerSide": true
+        }
+    ],
+    "fields": [
+        {
+            "fieldId": 1,
+            "fieldName": "name",
+            "fieldType": "String",
+            "fieldNameCapitalized": "Name",
+            "fieldNameUnderscored": "name",
+            "fieldInJavaBeanMethod": "Name",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 2,
+            "fieldName": "outputSlots",
+            "fieldType": "Integer",
+            "fieldNameCapitalized": "OutputSlots",
+            "fieldNameUnderscored": "output_slots",
+            "fieldInJavaBeanMethod": "OutputSlots",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 3,
+            "fieldName": "stopId",
+            "fieldType": "String",
+            "fieldNameCapitalized": "StopId",
+            "fieldNameUnderscored": "stop_id",
+            "fieldInJavaBeanMethod": "StopId",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 4,
+            "fieldName": "travelTimeFromHomeToStationInSeconds",
+            "fieldType": "Long",
+            "fieldNameCapitalized": "TravelTimeFromHomeToStationInSeconds",
+            "fieldNameUnderscored": "travel_time_from_home_to_station_in_seconds",
+            "fieldInJavaBeanMethod": "TravelTimeFromHomeToStationInSeconds",
+            "fieldValidate": false
+        }
+    ],
+    "fieldsContainOwnerManyToMany": true,
+    "fieldsContainOwnerOneToOne": false,
+    "fieldsContainOneToMany": false,
+    "fieldsContainLocalDate": false,
+    "fieldsContainCustomTime": false,
+    "fieldsContainBigDecimal": false,
+    "fieldsContainDateTime": false,
+    "fieldsContainDate": false,
+    "changelogDate": "20150706233530",
+    "dto": "no",
+    "pagination": "no",
+    "validation": false
+}

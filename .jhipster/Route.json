@@ -1,0 +1,44 @@
+{
+    "relationships": [],
+    "fields": [
+        {
+            "fieldId": 1,
+            "fieldName": "routeId",
+            "fieldType": "String",
+            "fieldNameCapitalized": "RouteId",
+            "fieldNameUnderscored": "route_id",
+            "fieldInJavaBeanMethod": "RouteId",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 2,
+            "fieldName": "longName",
+            "fieldType": "String",
+            "fieldNameCapitalized": "LongName",
+            "fieldNameUnderscored": "long_name",
+            "fieldInJavaBeanMethod": "LongName",
+            "fieldValidate": false
+        },
+        {
+            "fieldId": 3,
+            "fieldName": "shortName",
+            "fieldType": "String",
+            "fieldNameCapitalized": "ShortName",
+            "fieldNameUnderscored": "short_name",
+            "fieldInJavaBeanMethod": "ShortName",
+            "fieldValidate": false
+        }
+    ],
+    "fieldsContainOwnerManyToMany": false,
+    "fieldsContainOwnerOneToOne": false,
+    "fieldsContainOneToMany": false,
+    "fieldsContainLocalDate": false,
+    "fieldsContainCustomTime": false,
+    "fieldsContainBigDecimal": false,
+    "fieldsContainDateTime": false,
+    "fieldsContainDate": false,
+    "changelogDate": "20150706233245",
+    "dto": "no",
+    "pagination": "no",
+    "validation": false
+}

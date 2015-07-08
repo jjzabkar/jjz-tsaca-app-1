@@ -1,0 +1,55 @@
+
+<div>
+    <h2><span>Station</span> {{station.id}}</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span>Name</span>
+                    </td>
+                    <td>
+                        <input type="text" class="input-sm form-control" value="{{station.name}}" readonly>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span>OutputSlots</span>
+                    </td>
+                    <td>
+                        <input type="text" class="input-sm form-control" value="{{station.outputSlots}}" readonly>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span>StopId</span>
+                    </td>
+                    <td>
+                        <input type="text" class="input-sm form-control" value="{{station.stopId}}" readonly>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span>TravelTimeFromHomeToStationInSeconds</span>
+                    </td>
+                    <td>
+                        <input type="text" class="input-sm form-control" value="{{station.travelTimeFromHomeToStationInSeconds}}" readonly>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button type="submit"
+            ui-sref="station"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+</div>
