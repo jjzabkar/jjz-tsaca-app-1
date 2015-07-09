@@ -31,27 +31,4 @@ public class ArduinoCsvResource {
 		log.info("/hello");
 		return "abc,def\nghi,jkl";
 	}
-
-	/**
-	 * 401 Unauthorized: <code>curl -H 'Accepts: application/json' 'http://localhost:8080/csv/stop-json'</code>
-	 */
-	@RequestMapping(value = "/stopjson", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@Timed
-	@ResponseBody
-	public Object getStopJson() {
-		log.info("/stop-json");
-		return obaStopService.getTestStop();
-	}
-
-	/**
-	 * 401 Unauthorized: <code>curl -H 'Accepts: text/plain' 'http://localhost:8080/csv/stop-plain'</code>
-	 */
-	@RequestMapping(value = "/stopplain", method = RequestMethod.GET)
-	@Timed
-	@ResponseBody
-	public Object getStopPlain() {
-		log.info("/stop-plain");
-		return obaStopService.getTestStop();
-	}
-
 }
