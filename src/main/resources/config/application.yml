@@ -36,3 +36,5 @@ swagger:
 
 onebusaway:
     apiKey: FROM_APPLICATION_YML
+    routeService:
+         uri: http://api.pugetsound.onebusaway.org/api/where/route/{routeId}.json?key={apiKey}

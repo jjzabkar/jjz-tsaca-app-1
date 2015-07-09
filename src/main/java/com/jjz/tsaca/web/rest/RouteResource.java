@@ -1,20 +1,27 @@
 package com.jjz.tsaca.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
-import com.jjz.tsaca.domain.Route;
-import com.jjz.tsaca.repository.RouteRepository;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import com.codahale.metrics.annotation.Timed;
+import com.jjz.tsaca.domain.Route;
+import com.jjz.tsaca.repository.RouteRepository;
+import com.jjz.tsaca.service.OneBusAwayApiRouteService;
 
 /**
  * REST controller for managing Route.
@@ -28,6 +35,9 @@ public class RouteResource {
     @Inject
     private RouteRepository routeRepository;
 
+	@Inject
+	private OneBusAwayApiRouteService obaRouteService;
+
     /**
      * POST  /routes -> Create a new route.
      */
@@ -40,7 +50,7 @@ public class RouteResource {
         if (route.getId() != null) {
             return ResponseEntity.badRequest().header("Failure", "A new route cannot already have an ID").body(null);
         }
-        Route result = routeRepository.save(route);
+        Route result = obaRouteService.save(route);
         return ResponseEntity.created(new URI("/api/routes/" + route.getId())).body(result);
     }
 
@@ -56,7 +66,7 @@ public class RouteResource {
         if (route.getId() == null) {
             return create(route);
         }
-        Route result = routeRepository.save(route);
+        Route result = obaRouteService.save(route);
         return ResponseEntity.ok().body(result);
     }
 
