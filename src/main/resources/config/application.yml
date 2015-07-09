@@ -38,3 +38,5 @@ onebusaway:
     apiKey: FROM_APPLICATION_YML
     routeService:
          uri: http://api.pugetsound.onebusaway.org/api/where/route/{routeId}.json?key={apiKey}
+    stopService:
+         uri: http://api.pugetsound.onebusaway.org/api/where/stop/{stopId}.json?key={apiKey}
