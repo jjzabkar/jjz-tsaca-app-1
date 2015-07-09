@@ -1,19 +1,21 @@
 package org.onebusaway.model;
 
+import org.onebusaway.gtfs.model.Route;
+
 /**
  * Simple deserialization wrapper for OBA API responses.
  * 
  * @author jjzabkar
  */
 public class OBAGetRouteResponse {
-	private OBAData data;
+	private OBAGetRouteResponseData data;
 	private String text;
 
-	public OBAData getData() {
+	public OBAGetRouteResponseData getData() {
 		return data;
 	}
 
-	public void setData(OBAData data) {
+	public void setData(OBAGetRouteResponseData data) {
 		this.data = data;
 	}
 
@@ -24,4 +26,17 @@ public class OBAGetRouteResponse {
 	public void setText(String text) {
 		this.text = text;
 	}
+
+	public class OBAGetRouteResponseData {
+		private Route entry;
+
+		public Route getEntry() {
+			return entry;
+		}
+
+		public void setRoute(Route entry) {
+			this.entry = entry;
+		}
+	}
+
 }
