@@ -69,6 +69,7 @@ public class OneBusAwayApiArrivalsAndDeparturesService implements EnvironmentAwa
 		log.info("fixedDelay()");
 		List<Station> stations = obaApiStationService.findAll();
 		Map<String,Route> routeIdMap = obaApiRouteService.findAllMap();
+		Map<String, ArrivalAndDeparture> newAads = new HashMap<>();
 		for (Station station : stations){
 			final String stopId = station.getStopId();
 			log.info("stopId={},\t name='{}'", stopId, station.getName());
@@ -79,9 +80,13 @@ public class OneBusAwayApiArrivalsAndDeparturesService implements EnvironmentAwa
 				if(routeIdMap.containsKey(routeId)){
 					Route r = routeIdMap.get(routeId);
 					log.info("Found: aaD.routeId={},\t name='{}',\t route={}", aad.getRouteLongName(), routeId, r);
-					arrivalsMap.put(aad.getTripId(), aad);
+					newAads.put(aad.getTripId(), aad);
 				}
 			}
+		}
+		synchronized (this.arrivalsMap) {
+			this.arrivalsMap.clear();
+			this.arrivalsMap.putAll(newAads);
 		}
 	}
 
