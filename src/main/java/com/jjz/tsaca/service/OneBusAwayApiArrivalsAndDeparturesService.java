@@ -64,7 +64,6 @@ public class OneBusAwayApiArrivalsAndDeparturesService implements EnvironmentAwa
 		return result;
 	}
 
-	// @Scheduled(fixedDelay = 60000L)
 	@Scheduled(fixedDelay = 60000L)
 	public void fixedDelay() {
 		log.info("fixedDelay()");
