@@ -142,6 +142,11 @@
             <artifactId>commons-lang</artifactId>
             <version>${commons-lang.version}</version>
         </dependency>
+        <dependency>
+            <groupId>fr.dudie</groupId>
+            <artifactId>onebusaway-api</artifactId>
+            <version>${onebusaway-api.version}</version>
+        </dependency>
         <!-- reporting -->
         <dependency>
             <groupId>fr.ippon.spark.metrics</groupId>
@@ -279,6 +284,16 @@
             <version>${mapstruct.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-cypher-compiler-2.1</artifactId>
+            <version>2.1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.onebusaway</groupId>
+            <artifactId>onebusaway-gtfs</artifactId>
+            <version>${onebusaway-gtfs.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
@@ -358,21 +373,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-data</artifactId>
             <version>${spring-security.version}</version>
-        </dependency>
-        <dependency>
-        	<groupId>fr.dudie</groupId>
-        	<artifactId>onebusaway-api</artifactId>
-        	<version>${onebusaway-api.version}</version>
-        </dependency>
-        <dependency>
-        	<groupId>org.onebusaway</groupId>
-        	<artifactId>onebusaway-gtfs</artifactId>
-        	<version>${onebusaway-gtfs.version}</version>
-        </dependency>
-        <dependency>
-        	<groupId>org.neo4j</groupId>
-        	<artifactId>neo4j-cypher-compiler-2.1</artifactId>
-        	<version>2.1.5</version>
         </dependency>
     </dependencies>
     <build>
