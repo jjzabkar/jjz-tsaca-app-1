@@ -7,17 +7,17 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 public class OneBusAwayApiService implements EnvironmentAware {
 
 	public static final String OBA_PROPERTY_PREFIX = "onebusaway.";
-	public static final String OBA_API_KEY = "apiKey";
+	public static final String OBA_API_KEY = "OBA_API_KEY";
 
 	private final Logger log = LoggerFactory.getLogger(OneBusAwayApiService.class);
 
@@ -28,8 +28,8 @@ public class OneBusAwayApiService implements EnvironmentAware {
 
 	@Override
 	public void setEnvironment(Environment env) {
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, OBA_PROPERTY_PREFIX);
-		this.apiKey = propertyResolver.getProperty(OBA_API_KEY);
+		this.apiKey = env.getProperty(OBA_API_KEY);
+		Assert.notNull("Expected environment variable: " + OBA_API_KEY, this.apiKey);
 		log.info("Created OneBusAwayApiService({})", this.apiKey);
 	}
 
@@ -39,7 +39,7 @@ public class OneBusAwayApiService implements EnvironmentAware {
 
 	public <T> T getForObject(String url, Class<T> responseType, Map<String, ?> urlVariables) {
 		final Map<String, Object> myMap = new HashMap<>(urlVariables);
-		myMap.put(OBA_API_KEY, apiKey);
+		myMap.put("apiKey", apiKey);
 		return restTemplate.getForObject(url, responseType, myMap);
 	}
 
