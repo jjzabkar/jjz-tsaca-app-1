@@ -10,7 +10,7 @@ import com.jjz.tsaca.domain.Route;
 import com.jjz.tsaca.domain.Station;
 
 @Service
-@Profile("dev")
+@Profile({ "dev", "prod" })
 public class DevProfileTestDataPopulationService {
 
 	@Inject
