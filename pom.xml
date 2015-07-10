@@ -44,7 +44,8 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <metrics-spark-reporter.version>1.2</metrics-spark-reporter.version>
         <metrics-spring.version>3.0.4</metrics-spring.version>
-        <onebusaway.version>1.3.4</onebusaway.version>
+        <onebusaway-api.version>1.1</onebusaway-api.version>
+        <onebusaway-gtfs.version>1.3.4</onebusaway-gtfs.version>
         <postgresql.version>9.3-1102-jdbc41</postgresql.version>
         <run.addResources>false</run.addResources>
         <sonar-maven-plugin.version>2.3</sonar-maven-plugin.version>
@@ -359,9 +360,14 @@
             <version>${spring-security.version}</version>
         </dependency>
         <dependency>
+        	<groupId>fr.dudie</groupId>
+        	<artifactId>onebusaway-api</artifactId>
+        	<version>${onebusaway-api.version}</version>
+        </dependency>
+        <dependency>
         	<groupId>org.onebusaway</groupId>
         	<artifactId>onebusaway-gtfs</artifactId>
-        	<version>${onebusaway.version}</version>
+        	<version>${onebusaway-gtfs.version}</version>
         </dependency>
     </dependencies>
     <build>

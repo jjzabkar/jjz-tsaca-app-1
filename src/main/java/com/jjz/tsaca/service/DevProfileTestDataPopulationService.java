@@ -17,6 +17,8 @@ public class DevProfileTestDataPopulationService {
 	private OneBusAwayApiRouteService routeService;
 	@Inject
 	private OneBusAwayApiStopService stopService;
+	@Inject
+	private OneBusAwayApiArrivalsAndDeparturesService poll;
 
 	@PostConstruct
 	public void postConstruct() {
@@ -32,5 +34,8 @@ public class DevProfileTestDataPopulationService {
 			s.setStopId(stopId);
 			stopService.save(s);
 		}
+
+		poll.fetch("29_2765");
+
 	}
 }

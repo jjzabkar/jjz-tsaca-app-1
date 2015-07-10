@@ -36,6 +36,8 @@ swagger:
 
 onebusaway:
     apiKey: FROM_APPLICATION_YML
+    arrivalsAndDeparturesService:
+         uri: http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/{stopId}.json?key={apiKey}
     routeService:
          uri: http://api.pugetsound.onebusaway.org/api/where/route/{routeId}.json?key={apiKey}
     stopService:
