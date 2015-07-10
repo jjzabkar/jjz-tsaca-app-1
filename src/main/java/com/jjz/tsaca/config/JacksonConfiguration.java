@@ -2,6 +2,7 @@ package com.jjz.tsaca.config;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.joda.time.DateTime;
@@ -19,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -38,8 +40,8 @@ public class JacksonConfiguration {
 		JodaModule module = new JodaModule();
 		DateTimeFormatterFactory formatterFactory = new DateTimeFormatterFactory();
 		formatterFactory.setIso(DateTimeFormat.ISO.DATE);
-		module.addSerializer(DateTime.class, new DateTimeSerializer(new JacksonJodaFormat(formatterFactory.createDateTimeFormatter()
-				.withZoneUTC())));
+		module.addSerializer(DateTime.class,
+				new DateTimeSerializer(new JacksonJodaFormat(formatterFactory.createDateTimeFormatter().withZoneUTC())));
 		return module;
 	}
 
@@ -49,13 +51,24 @@ public class JacksonConfiguration {
 		List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
 		for (HttpMessageConverter<?> converter : converters) {
 			if (converter instanceof MappingJackson2HttpMessageConverter) {
-				ObjectMapper objectMapper = ((MappingJackson2HttpMessageConverter) converter).getObjectMapper();
-				/* per: https://stackoverflow.com/questions/16652830/how-should-i-set-a-feature-on-a-spring-message-converters-object-mapper */
-				objectMapper.registerModule(new MyIgnoreWheelChairBoardingMixInModule());
+				final ObjectMapper om = ((MappingJackson2HttpMessageConverter) converter).getObjectMapper();
+				configureObjectMapper(om);
 				log.info("registered mixin on RestTemplate converter={}", converter);
 			}
 		}
 		return restTemplate;
+	}
+
+	@PostConstruct
+	public void postConstruct() {
+		configureObjectMapper(this.objectMapper);
+	}
+
+	public void configureObjectMapper(final ObjectMapper om) {
+		/* per: https://stackoverflow.com/questions/16652830/how-should-i-set-a-feature-on-a-spring-message-converters-object-mapper */
+		om.registerModule(new MyIgnoreWheelChairBoardingMixInModule());
+		om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		log.debug("Configured ObjectMapper={}", om);
 	}
 
 	public class MyIgnoreWheelChairBoardingMixInModule extends SimpleModule {
@@ -74,7 +87,9 @@ public class JacksonConfiguration {
 		}
 	}
 
-	/** @see http://wiki.fasterxml.com/JacksonMixInAnnotations */
+	/**
+	 * @see http://wiki.fasterxml.com/JacksonMixInAnnotations
+	 */
 	abstract class IgnoreStopWheelChairBoardingMixIn {
 		@XmlTransient
 		@JsonIgnore
