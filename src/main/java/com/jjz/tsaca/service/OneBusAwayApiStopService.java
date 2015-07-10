@@ -1,7 +1,10 @@
 package com.jjz.tsaca.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -10,11 +13,14 @@ import org.onebusaway.model.OBAGetStationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jjz.tsaca.config.Constants;
 import com.jjz.tsaca.domain.Station;
 import com.jjz.tsaca.repository.StationRepository;
 
@@ -39,6 +45,19 @@ public class OneBusAwayApiStopService implements EnvironmentAware {
 		log.info("onebusaway.stopService.uri={}", this.uri);
 	}
 
+	@Cacheable(value = Constants.OBA_STOP_SERVICE_CACHENAME, key = "'findAll'")
+	public List<Station> findAll() {
+		return stationRepository.findAll();
+	}
+
+	@Cacheable(value = Constants.OBA_STOP_SERVICE_CACHENAME, key = "'findAllMap'")
+	public Map<String, Station> findAllMap() {
+		List<Station> stations = findAll();
+		// example: http://stackoverflow.com/a/20363874/237225
+		return stations.stream().collect(Collectors.toConcurrentMap(Station::getStopId, Function.identity()));
+	}
+
+	@CacheEvict(value = Constants.OBA_STOP_SERVICE_CACHENAME)
 	public Station save(Station station) {
 		Map<String, Object> myMap = new HashMap<>();
 		myMap.put("stopId", station.getStopId());
@@ -49,9 +68,6 @@ public class OneBusAwayApiStopService implements EnvironmentAware {
 			Stop obaStop = response.getData().getEntry();
 			if (obaStop != null) {
 				station.setName(obaStop.getName());
-				if (obaStop.getId() != null) {
-					station.setStopId(obaStop.getId().getId());
-				}
 			}
 		}
 
