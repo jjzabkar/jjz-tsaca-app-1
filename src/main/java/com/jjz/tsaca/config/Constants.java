@@ -19,4 +19,8 @@ public final class Constants {
 
     public static final String SYSTEM_ACCOUNT = "system";
 
+	// Cache Names
+	public static final String OBA_ROUTE_SERVICE_CACHE_NAME = "OneBusAwayApiRouteServiceCache";
+	public static final String OBA_STOP_SERVICE_CACHENAME = "OneBusAwayApiStopServiceCache";
+
 }

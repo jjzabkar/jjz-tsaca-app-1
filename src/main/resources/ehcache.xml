@@ -36,4 +36,9 @@
     <cache name="com.jjz.tsaca.domain.User.persistentTokens"
            timeToLiveSeconds="3600">
     </cache>
+
+    <cache name="OneBusAwayApiRouteServiceCache" timeToLiveSeconds="3600" />
+
+    <cache name="OneBusAwayApiStopServiceCache" timeToLiveSeconds="3600" />
+
 </ehcache>

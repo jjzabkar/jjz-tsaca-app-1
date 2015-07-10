@@ -28,6 +28,7 @@
 -->
 
     <logger name="com.jjz.tsaca" level="${logback.loglevel}"/>
+    <logger name="com.jjz.tsaca.aop.logging" level="INFO"/>
 
     <logger name="javax.activation" level="WARN"/>
     <logger name="javax.mail" level="WARN"/>
@@ -46,9 +47,9 @@
     <logger name="org.hibernate" level="WARN"/>
     <logger name="org.hibernate.ejb.HibernatePersistence" level="OFF"/>
     <logger name="org.springframework" level="WARN"/>
+    <logger name="org.springframework.cache" level="WARN"/>
     <logger name="org.springframework.web" level="WARN"/>
     <logger name="org.springframework.security" level="WARN"/>
-    <logger name="org.springframework.cache" level="WARN"/>
     <logger name="org.thymeleaf" level="WARN"/>
     <logger name="org.xnio" level="WARN"/>
     <logger name="springfox" level="WARN"/>
