@@ -17,25 +17,32 @@ public class DevProfileTestDataPopulationService {
 	private OneBusAwayApiRouteService routeService;
 	@Inject
 	private OneBusAwayApiStopService stopService;
-	@Inject
-	private OneBusAwayApiArrivalsAndDeparturesService poll;
 
 	@PostConstruct
 	public void postConstruct() {
-		String[] routeIds = { "1_100175", "29_413", "29_435" };
+		String[] routeIds = { //
+				"1_102615", // E-line
+				"1_100175", // 301
+				"29_413", // 413
+				"29_435", // 435
+				"40_SNDR_N" //
+				};
 		for (String routeId : routeIds) {
 			Route r = new Route();
 			r.setRouteId(routeId);
 			routeService.save(r);
 		}
-		String[] stopIds = { "29_2765", "1_75730" };
+		String[] stopIds = { //
+				"1_75730", // Shoreline P&R
+				"29_2765", // Mountlake Terrace P&R
+				"40_S_ED" // Edmonds Station
+				};
 		for (String stopId : stopIds) {
 			Station s = new Station();
 			s.setStopId(stopId);
 			stopService.save(s);
 		}
 
-		poll.fetch("29_2765");
 
 	}
 }
