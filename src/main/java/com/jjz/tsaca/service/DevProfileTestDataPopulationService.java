@@ -10,7 +10,7 @@ import com.jjz.tsaca.domain.Route;
 import com.jjz.tsaca.domain.Station;
 
 @Service
-@Profile({ "dev", "prod" })
+@Profile({ "dev" })
 public class DevProfileTestDataPopulationService {
 
 	@Inject
@@ -28,9 +28,11 @@ public class DevProfileTestDataPopulationService {
 				"40_SNDR_N" //
 				};
 		for (String routeId : routeIds) {
-			Route r = new Route();
-			r.setRouteId(routeId);
-			routeService.save(r);
+			if (!routeService.findAllMap().containsKey(routeId)) {
+				Route r = new Route();
+				r.setRouteId(routeId);
+				routeService.save(r);
+			}
 		}
 		String[] stopIds = { //
 				"1_75730", // Shoreline P&R
@@ -38,11 +40,12 @@ public class DevProfileTestDataPopulationService {
 				"40_S_ED" // Edmonds Station
 				};
 		for (String stopId : stopIds) {
-			Station s = new Station();
-			s.setStopId(stopId);
-			stopService.save(s);
+			if (!stopService.findAllMap().containsKey(stopId)) {
+				Station s = new Station();
+				s.setStopId(stopId);
+				stopService.save(s);
+			}
 		}
-
 
 	}
 }
