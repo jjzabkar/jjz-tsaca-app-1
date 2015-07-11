@@ -29,13 +29,15 @@ swagger:
     description: jjztsacaapp1 applications and beyond!
     version: 0.0.1
     termsOfServiceUrl: http://jhipster.github.io/
-    contact:
+    contact: JJ Zabkar
     license: Apache 2.0
     licenseUrl: http://www.apache.org/licenses/LICENSE-2.0.html
 
-
+spring:
+  application:
+    name: jjztsacaapp1
+    
 onebusaway:
-    apiKey: FROM_APPLICATION_YML
     arrivalsAndDeparturesService:
          uri: http://api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/{stopId}.json?key={apiKey}
     routeService:
