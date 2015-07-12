@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.onebusaway.model.OBAGetArrivalsAndDeparturesResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,10 @@ import com.jjz.tsaca.domain.Station;
 import fr.dudie.onebusaway.model.ArrivalAndDeparture;
 
 @Service
-// @Transactional
 @ConfigurationProperties(prefix = "onebusaway.arrivalsAndDeparturesService", ignoreUnknownFields = false)
-
 public class OneBusAwayApiArrivalsAndDeparturesService {
+
+	private static final String COMMA = ",";
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -37,6 +38,7 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 	private String uri;
 
 	private ConcurrentHashMap<String, ArrivalAndDeparture> arrivalsMap = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, List<ArrivalAndDeparture>> arrivalsPerStation = new ConcurrentHashMap<>();
 
 	public String getUri() {
 		return uri;
@@ -73,11 +75,14 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 		List<Station> stations = obaApiStationService.findAll();
 		Map<String,Route> routeIdMap = obaApiRouteService.findAllMap();
 		Map<String, ArrivalAndDeparture> newAads = new HashMap<>();
+		Map<String, List<ArrivalAndDeparture>> newArrivalsPerStation = new HashMap<>();
+
 		for (Station station : stations){
 			final String stopId = station.getStopId();
 			log.info("stopId={},\t name='{}'", stopId, station.getName());
 			log.info("routeIdMap={}", routeIdMap.keySet());
 			List<ArrivalAndDeparture> aadListForStation = fetchForStopId(stopId);
+			newArrivalsPerStation.put(stopId, aadListForStation);
 			for (ArrivalAndDeparture aad : aadListForStation) {
 				final String routeId = aad.getRouteId();
 				if(routeIdMap.containsKey(routeId)){
@@ -88,14 +93,40 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 			}
 		}
 		synchronized (this.arrivalsMap) {
-			this.arrivalsMap.clear();
-			this.arrivalsMap.putAll(newAads);
+			synchronized (this.arrivalsPerStation) {
+				this.arrivalsMap.clear();
+				this.arrivalsMap.putAll(newAads);
+				this.arrivalsPerStation.clear();
+				this.arrivalsPerStation.putAll(newArrivalsPerStation);
+			}
 		}
 	}
 
 	// TODO: Do the Map or AAD need to be immutable?
 	public Map<String, ArrivalAndDeparture> getArrivalsMap() {
 		return arrivalsMap;
+	}
+
+	public String fetchArduinoCsvData() {
+		StringBuilder output = new StringBuilder();
+		List<Station> stations = obaApiStationService.findAll();
+		for (Station s : stations) {
+			final Integer outputSlots = ObjectUtils.defaultIfNull(s.getOutputSlots(), new Integer(4));
+			final String stopId = s.getStopId();
+			output.append(stopId);
+			List<ArrivalAndDeparture> aadListForStation = this.arrivalsPerStation.get(stopId);
+			for (int i = 0; i < outputSlots; i++) {
+				if (i < aadListForStation.size()) {
+					output.append(COMMA);
+					output.append(aadListForStation.get(i).getTripId());
+				} else {
+					output.append(COMMA).append("black");
+				}
+			}
+			output.append("\n");
+		}
+
+		return output.toString();
 	}
 
 }
