@@ -66,7 +66,7 @@ public class RouteResource {
         if (route.getId() == null) {
             return create(route);
         }
-        Route result = obaRouteService.save(route);
+		Route result = routeRepository.save(route);
         return ResponseEntity.ok().body(result);
     }
 
