@@ -1,5 +1,7 @@
 package com.jjz.tsaca.service;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -30,7 +32,14 @@ public class DevProfileTestDataPopulationService {
 				"40_SNDR_N" //
 				};
 		for (String routeId : routeIds) {
-			if (!routeService.findAllMap().containsKey(routeId)) {
+			List<Route> existingRoutes = routeService.findAll();
+			boolean found = false;
+			for (Route r : existingRoutes) {
+				if (routeId.equals(r.getRouteId())) {
+					found = true;
+				}
+			}
+			if (!found) {
 				Route r = new Route();
 				r.setRouteId(routeId);
 				routeService.save(r);
@@ -46,6 +55,8 @@ public class DevProfileTestDataPopulationService {
 			if (!stopService.findAllMap().containsKey(stopId)) {
 				Station s = new Station();
 				s.setStopId(stopId);
+				s.setOutputSlots(4);
+				s.setTravelTimeFromHomeToStationInSeconds(10L * 60L);
 				stopService.save(s);
 			}
 		}
