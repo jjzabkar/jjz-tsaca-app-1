@@ -73,22 +73,22 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 	public void fixedDelay() {
 		log.info("fixedDelay()");
 		List<Station> stations = obaApiStationService.findAll();
-		Map<String,Route> routeIdMap = obaApiRouteService.findAllMap();
+		List<Route> routeList = obaApiRouteService.findAll();
 		Map<String, ArrivalAndDeparture> newAads = new HashMap<>();
 		Map<String, List<ArrivalAndDeparture>> newArrivalsPerStation = new HashMap<>();
 
 		for (Station station : stations){
 			final String stopId = station.getStopId();
 			log.info("stopId={},\t name='{}'", stopId, station.getName());
-			log.info("routeIdMap={}", routeIdMap.keySet());
 			List<ArrivalAndDeparture> aadListForStation = fetchForStopId(stopId);
 			newArrivalsPerStation.put(stopId, aadListForStation);
 			for (ArrivalAndDeparture aad : aadListForStation) {
 				final String routeId = aad.getRouteId();
-				if(routeIdMap.containsKey(routeId)){
-					Route r = routeIdMap.get(routeId);
-					log.info("Found: aaD.routeId={},\t name='{}',\t route={}", aad.getRouteLongName(), routeId, r);
-					newAads.put(aad.getTripId(), aad);
+				for (Route r : routeList) {
+					if (routeId.equals(r.getRouteId())) {
+						log.info("Found: aaD.routeId={},\t name='{}',\t route={}", aad.getRouteLongName(), routeId, r);
+						newAads.put(aad.getTripId(), aad);
+					}
 				}
 			}
 		}
