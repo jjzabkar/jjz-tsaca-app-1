@@ -123,3 +123,4 @@ Desktop.ini
 !gradle/wrapper/gradle-wrapper.jar
 /target/
 src/main/resources/config/application-dev.yml
+.factorypath
