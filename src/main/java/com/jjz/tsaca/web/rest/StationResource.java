@@ -66,7 +66,7 @@ public class StationResource {
         if (station.getId() == null) {
             return create(station);
         }
-		Station result = obaStopService.save(station);
+		Station result = stationRepository.save(station);
         return ResponseEntity.ok().body(result);
     }
 

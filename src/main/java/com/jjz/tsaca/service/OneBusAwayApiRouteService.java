@@ -62,7 +62,7 @@ public class OneBusAwayApiRouteService {
 			org.onebusaway.gtfs.model.Route obaRoute = response.getData().getEntry();
 			if (obaRoute != null) {
 				route.setLongName((String) ObjectUtils.defaultIfNull(obaRoute.getLongName(), obaRoute.getShortName()));
-				route.setShortName(obaRoute.getShortName());
+				route.setShortName((String) ObjectUtils.defaultIfNull(obaRoute.getShortName(), obaRoute.getLongName()));
 			}
 		}
 
