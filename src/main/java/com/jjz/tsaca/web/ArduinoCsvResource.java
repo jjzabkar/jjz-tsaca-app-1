@@ -17,7 +17,7 @@ import com.jjz.tsaca.service.OneBusAwayApiArrivalsAndDeparturesService;
 import fr.dudie.onebusaway.model.ArrivalAndDeparture;
 
 @Controller
-@RequestMapping(value = "/csv", produces = MediaType.TEXT_PLAIN_VALUE)
+@RequestMapping(value = "/csv", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 public class ArduinoCsvResource {
 
 	private final Logger log = LoggerFactory.getLogger(ArduinoCsvResource.class);
@@ -28,7 +28,7 @@ public class ArduinoCsvResource {
 	/**
 	 * WORKY: <code>curl http://localhost:8080/csv/hello</code>
 	 */
-	@RequestMapping(value = "/hello", method = RequestMethod.GET)
+	@RequestMapping(value = "/hello")
 	@Timed
 	@ResponseBody
 	public String getHello() {
@@ -36,10 +36,17 @@ public class ArduinoCsvResource {
 		return "abc,def\nghi,jkl";
 	}
 
-	@RequestMapping(value = "/map", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/map", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<String, ArrivalAndDeparture> getUnsecuredMap() {
 		return service.getArrivalsMap();
+	}
+
+	@RequestMapping(value = "/data")
+	@Timed
+	@ResponseBody
+	public String getData() {
+		return service.fetchArduinoCsvData();
 	}
 
 }

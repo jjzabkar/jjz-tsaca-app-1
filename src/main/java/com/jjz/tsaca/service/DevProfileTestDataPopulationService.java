@@ -21,6 +21,8 @@ public class DevProfileTestDataPopulationService {
 	@PostConstruct
 	public void postConstruct() {
 		String[] routeIds = { //
+				"1_102576", // C-line, for busy stop test (3rd & Pike)
+				"1_100019", // 120, for busy stop test (3rd & Pike)
 				"1_102615", // E-line
 				"1_100175", // 301
 				"29_413", // 413
@@ -35,6 +37,7 @@ public class DevProfileTestDataPopulationService {
 			}
 		}
 		String[] stopIds = { //
+				"1_431", // 3rd & Pike (a busy stop)
 				"1_75730", // Shoreline P&R
 				"29_2765", // Mountlake Terrace P&R
 				"40_S_ED" // Edmonds Station
