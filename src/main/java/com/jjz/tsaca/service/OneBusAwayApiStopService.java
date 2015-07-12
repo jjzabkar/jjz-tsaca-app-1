@@ -17,6 +17,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriTemplate;
 
 import com.jjz.tsaca.config.Constants;
 import com.jjz.tsaca.domain.Station;
@@ -35,6 +36,7 @@ public class OneBusAwayApiStopService {
 	@Inject
 	private OneBusAwayApiService obaApiService;
 	private String uri;
+	private String pugetSoundUri;
 
 	public String getUri() {
 		return uri;
@@ -45,6 +47,14 @@ public class OneBusAwayApiStopService {
 	 */
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	public String getPugetSoundUri() {
+		return pugetSoundUri;
+	}
+
+	public void setPugetSoundUri(String pugetSoundUri) {
+		this.pugetSoundUri = pugetSoundUri;
 	}
 
 	@Cacheable(value = Constants.OBA_STOP_SERVICE_CACHENAME, key = "'findAll'")
@@ -74,6 +84,12 @@ public class OneBusAwayApiStopService {
 		}
 
 		return stationRepository.save(station);
+	}
+
+	public String getUrlForStopId(String stopId) {
+		Map<String, Object> myMap = new HashMap<>();
+		myMap.put("stopId", stopId);
+		return (new UriTemplate(this.pugetSoundUri).expand(myMap)).toString();
 	}
 
 }
