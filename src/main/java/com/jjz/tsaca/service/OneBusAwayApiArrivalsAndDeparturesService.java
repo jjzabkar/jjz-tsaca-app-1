@@ -11,9 +11,7 @@ import javax.inject.Inject;
 import org.onebusaway.model.OBAGetArrivalsAndDeparturesResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +22,9 @@ import fr.dudie.onebusaway.model.ArrivalAndDeparture;
 
 @Service
 // @Transactional
-public class OneBusAwayApiArrivalsAndDeparturesService implements EnvironmentAware {
+@ConfigurationProperties(prefix = "onebusaway.arrivalsAndDeparturesService", ignoreUnknownFields = false)
+
+public class OneBusAwayApiArrivalsAndDeparturesService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -38,12 +38,15 @@ public class OneBusAwayApiArrivalsAndDeparturesService implements EnvironmentAwa
 
 	private ConcurrentHashMap<String, ArrivalAndDeparture> arrivalsMap = new ConcurrentHashMap<>();
 
-	/** @see YAML property {@code onebusaway.routeService.routeId} */
-	@Override
-	public void setEnvironment(Environment env) {
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "onebusaway.arrivalsAndDeparturesService.");
-		this.uri = propertyResolver.getProperty("uri");
-		log.info("onebusaway.arrivalsAndDeparturesService.uri={}", this.uri);
+	public String getUri() {
+		return uri;
+	}
+
+	/**
+	 * @see YAML property {@code onebusaway.arrivalsAndDeparturesService.uri}
+	 */
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 
 	public List<ArrivalAndDeparture> fetchForStopId(String stopId) {

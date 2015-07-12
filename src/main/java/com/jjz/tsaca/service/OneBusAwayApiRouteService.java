@@ -12,11 +12,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.onebusaway.model.OBAGetRouteResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +24,8 @@ import com.jjz.tsaca.repository.RouteRepository;
 
 @Service
 @Transactional
-public class OneBusAwayApiRouteService implements EnvironmentAware {
+@ConfigurationProperties(prefix = "onebusaway.routeService", ignoreUnknownFields = false)
+public class OneBusAwayApiRouteService {
 
 	private final Logger log = LoggerFactory.getLogger(OneBusAwayApiRouteService.class);
 
@@ -37,12 +36,15 @@ public class OneBusAwayApiRouteService implements EnvironmentAware {
 	private RouteRepository routeRepository;
 	private String uri;
 
-	/** @see YAML property {@code onebusaway.routeService.routeId} */
-	@Override
-	public void setEnvironment(Environment env) {
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "onebusaway.routeService.");
-		this.uri = propertyResolver.getProperty("uri");
-		log.info("onebusaway.routeService.routeId={}", this.uri);
+	public String getUri() {
+		return uri;
+	}
+
+	/**
+	 * @see YAML property {@code onebusaway.routeService.uri}
+	 */
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 
 	@Cacheable(value = Constants.OBA_ROUTE_SERVICE_CACHE_NAME, key = "'findAll'")

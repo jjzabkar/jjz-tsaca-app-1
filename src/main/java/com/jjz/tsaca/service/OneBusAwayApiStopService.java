@@ -12,11 +12,9 @@ import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.model.OBAGetStationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +24,8 @@ import com.jjz.tsaca.repository.StationRepository;
 
 @Service
 @Transactional
-public class OneBusAwayApiStopService implements EnvironmentAware {
+@ConfigurationProperties(prefix = "onebusaway.stopService", ignoreUnknownFields = false)
+public class OneBusAwayApiStopService {
 
 	private final Logger log = LoggerFactory.getLogger(OneBusAwayApiStopService.class);
 
@@ -37,12 +36,15 @@ public class OneBusAwayApiStopService implements EnvironmentAware {
 	private OneBusAwayApiService obaApiService;
 	private String uri;
 
-	/** @see YAML property {@code onebusaway.routeService.routeId} */
-	@Override
-	public void setEnvironment(Environment env) {
-		RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "onebusaway.stopService.");
-		this.uri = propertyResolver.getProperty("uri");
-		log.info("onebusaway.stopService.uri={}", this.uri);
+	public String getUri() {
+		return uri;
+	}
+
+	/**
+	 * @see YAML property {@code onebusaway.stopService.uri}
+	 */
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 
 	@Cacheable(value = Constants.OBA_STOP_SERVICE_CACHENAME, key = "'findAll'")
