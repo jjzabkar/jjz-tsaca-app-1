@@ -44,3 +44,4 @@ onebusaway:
          uri: http://api.pugetsound.onebusaway.org/api/where/route/{routeId}.json?key={apiKey}
     stopService:
          uri: http://api.pugetsound.onebusaway.org/api/where/stop/{stopId}.json?key={apiKey}
+         pugetSoundUri: http://pugetsound.onebusaway.org/where/standard/stop.action?id={stopId}

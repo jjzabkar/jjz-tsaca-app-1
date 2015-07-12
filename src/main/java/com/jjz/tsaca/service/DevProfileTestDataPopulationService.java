@@ -55,8 +55,8 @@ public class DevProfileTestDataPopulationService {
 			if (!stopService.findAllMap().containsKey(stopId)) {
 				Station s = new Station();
 				s.setStopId(stopId);
-				s.setOutputSlots(4);
-				s.setTravelTimeFromHomeToStationInSeconds(10L * 60L);
+				s.setOutputSlots(8);
+				s.setTravelTimeFromHomeToStationInSeconds(7L * 60L);
 				stopService.save(s);
 			}
 		}

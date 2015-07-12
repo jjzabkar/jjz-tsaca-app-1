@@ -35,6 +35,8 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 	private OneBusAwayApiRouteService obaApiRouteService;
 	@Inject
 	private OneBusAwayApiStopService obaApiStationService;
+	@Inject
+	private TimeCalculationService timeCalculationService;
 	private String uri;
 
 	private ConcurrentHashMap<String, ArrivalAndDeparture> arrivalsMap = new ConcurrentHashMap<>();
@@ -118,9 +120,13 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 			for (int i = 0; i < outputSlots; i++) {
 				if (i < aadListForStation.size()) {
 					output.append(COMMA);
-					output.append(aadListForStation.get(i).getTripId());
+					final ArrivalAndDeparture aad = aadListForStation.get(i);
+					final String color = timeCalculationService.getColor(aad, s);
+					log.debug("color={}\t routeId={}\t stopId={}", color, aad.getRouteId(), s.getStopId());
+					log.debug("\tStop  Page: {}", obaApiStationService.getUrlForStopId(stopId));
+					output.append(color);
 				} else {
-					output.append(COMMA).append("black");
+					output.append(COMMA).append("off");
 				}
 			}
 			output.append("\n");
