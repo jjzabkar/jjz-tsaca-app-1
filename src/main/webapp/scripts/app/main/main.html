@@ -10,24 +10,25 @@
             <h1>Welcome!</h1>
             <p class="lead">This is your homepage</p>
             
-            <p>
-            	<ol>
-            		<li><a href="#/stations">Create a Station</a></li>
-            		<li><a href="#/routes">Create a Route</a></li>
-            	</ol>
-            </p>
-
             <div ng-switch="isAuthenticated()">
                 <div class="alert alert-success" ng-switch-when="true">
                     You are logged in as user "{{account.login}}".
+		            <p>
+		            	<ol>
+		            		<li><a href="#/stations">Create a Station</a></li>
+		            		<li><a href="#/routes">Create a Route</a></li>
+		            	</ol>
+		            </p>
                 </div>
 
                 <div class="alert alert-warning" ng-switch-when="false">
-                    If you want to <a href="#/login">authenticate</a>, you can try the default accounts:<br/>- Administrator (login="admin" and password="admin") <br/>- User (login="user" and password="user").
+                    If you want to <a href="#/login">authenticate</a>, you can 
+                    <a class="btn btn-primary" href="#/login">Log in</a> 
                 </div>
 
                 <div class="alert alert-warning" ng-switch-when="false">
                     You don't have an account yet? <a href="#/register">Register a new account</a>
+                    <a class="btn btn-primary" href="#/register">Register</a>
                 </div>
             </div>
 
