@@ -25,13 +25,12 @@ public class ArrivalResource {
 	@Autowired
 	private OneBusAwayApiArrivalsAndDeparturesService service;
 
-	@RequestMapping(value = "/arrivals-text", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+	@RequestMapping(value = "/csv", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	@Timed
 	public Object getAll() {
 		log.debug("REST request to get all Arrivals");
 		return service.fetchArduinoCsvData();
-		// return arrivalRepository.findAll();
 	}
 
 	@RequestMapping(value = "/arrivals", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
