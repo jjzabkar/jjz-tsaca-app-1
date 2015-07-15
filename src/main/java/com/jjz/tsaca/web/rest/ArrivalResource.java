@@ -17,7 +17,7 @@ import com.jjz.tsaca.service.OneBusAwayApiArrivalsAndDeparturesService;
  * REST controller for managing Arrival.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/arrivals")
 public class ArrivalResource {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -33,7 +33,7 @@ public class ArrivalResource {
 		return service.fetchArduinoCsvData();
 	}
 
-	@RequestMapping(value = "/arrivals", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	@Timed
 	public Arrival getUnsecuredArrival() {
