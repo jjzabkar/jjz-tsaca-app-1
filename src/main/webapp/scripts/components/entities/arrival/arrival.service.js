@@ -2,7 +2,7 @@
 
 angular.module('jjztsacaapp1App')
     .factory('Arrival', function ($resource, DateUtils) {
-        return $resource('api/arrivals/:id', {}, {
+        return $resource('/arrivals/json', {}, {
             'query': { method: 'GET' } //, isArray: true},
 //            'get': {
 //                method: 'GET',
