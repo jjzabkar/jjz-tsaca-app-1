@@ -723,6 +723,7 @@
                             </execution>
                         </executions>
                         <configuration>
+                        	<skip>true</skip>
                             <yeomanProjectDirectory>${project.basedir}</yeomanProjectDirectory>
                         </configuration>
                     </plugin>
