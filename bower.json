@@ -1,6 +1,6 @@
 {
-    "name": "jjztsacaapp1",
-    "version": "0.0.0",
+    "name": "Timed Frame",
+    "version": "0.0.1",
     "appPath": "src/main/webapp",
     "testPath": "src/test/javascript/spec",
     "dependencies": {
@@ -16,6 +16,7 @@
     "angular-sanitize": "1.4.0",
     "angular-local-storage": "0.2.0",
     "angular-cache-buster": "0.4.3",
+    "font-awesome": "4.3.0",
     "ngInfiniteScroll": "1.2.0"
   },
   "devDependencies": {

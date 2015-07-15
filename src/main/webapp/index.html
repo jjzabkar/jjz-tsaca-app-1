@@ -3,13 +3,14 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>jjztsacaapp1</title>
-        <meta name="description" content="">
+        <title>TimedFrame</title>
+        <meta name="description" content="TimedFrame">
         <meta name="viewport" content="width=device-width">
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
         <!-- build:css assets/styles/vendor.css -->
         <!-- bower:css -->
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" />
         <!-- endbower -->
         <!-- endbuild -->
         <!-- build:css assets/styles/main.css -->
@@ -25,8 +26,46 @@
         <div class="container">
             <div class="well" ui-view="content"></div>
 
-            <div class="footer">
-                <p translate="footer">This is your footer</p>
+            <footer class="footer">
+			    <div class="container">
+			    	<div class=" col-md-offset-2 col-md-3">
+			        	<h4>Info</h4>
+			        	<p>
+			        		<i class="fa fa-info-circle"></i> About
+			        	</p>
+			        	<p>
+			        		<i class="fa fa-comments"></i> Contact
+			        	</p>
+			        	<p>
+			        		License
+			        	</p>
+			        	<p>
+			        		Thanks
+			        	</p>
+			    	</div>
+			        <div class="col-md-3">
+			        	<h4>Social</h4>
+			        	<p>
+			        		<a href="https://www.twitter.com/"><i class="fa fa-twitter"></i> Twitter</a>
+		        		</p>
+		        		<p>
+				        	<a href="https://www.facebook.com/"><i class="fa fa-facebook"></i> Facebook</a>
+			        	</p>
+			        </div>
+			    	<div class="col-md-3">
+			        	<h4>Help</h4>
+			        	<p>
+				        	<a href="http://developer.onebusaway.org/modules/onebusaway-application-modules/1.1.13/api/where/methods/arrivals-and-departures-for-stop.html"><i class="fa fa-bus"></i> OneBusAway API</a>
+		        		</p>
+		        		<p>
+				        	<a href="https://www.arduino.cc/en/Tutorial/HttpClient">Arduino API</a>
+		        		</p>
+		        		<p>
+				        	<a href="https://github.com/jjzabkar/jjz-tsaca-app-1"><i class="fa fa-github"></i> Github</a>
+		        		</p>
+			    	</div>
+  <!--               <p translate="footer">This is your footer</p> -->
+                </footer>
             </div>
         </div>
 
