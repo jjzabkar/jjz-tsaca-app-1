@@ -12,15 +12,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.codahale.metrics.annotation.Timed;
+import com.jjz.tsaca.domain.ArrivalDeparture;
 import com.jjz.tsaca.service.OneBusAwayApiArrivalsAndDeparturesService;
-
-import fr.dudie.onebusaway.model.ArrivalAndDeparture;
 
 @Controller
 @RequestMapping(value = "/csv", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 public class ArduinoCsvResource {
 
-	private final Logger log = LoggerFactory.getLogger(ArduinoCsvResource.class);
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private OneBusAwayApiArrivalsAndDeparturesService service;
@@ -38,7 +37,7 @@ public class ArduinoCsvResource {
 
 	@RequestMapping(value = "/map", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Map<String, ArrivalAndDeparture> getUnsecuredMap() {
+	public Map<String, ArrivalDeparture> getUnsecuredMap() {
 		return service.getArrivalsMap();
 	}
 

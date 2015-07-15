@@ -6,22 +6,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
-import fr.dudie.onebusaway.model.ArrivalAndDeparture;
+import com.jjz.tsaca.domain.ArrivalDeparture;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OBAGAADEntry {
 
 	@JsonProperty(value = "arrivalsAndDepartures")
-	@JsonDeserialize(contentAs = ArrivalAndDeparture.class)
-	private ArrayList<ArrivalAndDeparture> arrivalsAndDepartures;
+	@JsonDeserialize(contentAs = ArrivalDeparture.class)
+	private ArrayList<ArrivalDeparture> arrivalsAndDepartures;
 
 	private String stopId;
 
 	public OBAGAADEntry() {
 	}
 
-	public ArrayList<ArrivalAndDeparture> getArrivalsAndDepartures() {
+	public ArrayList<ArrivalDeparture> getArrivalsAndDepartures() {
 		return arrivalsAndDepartures;
 	}
 
@@ -29,7 +28,7 @@ public class OBAGAADEntry {
 		return stopId;
 	}
 
-	public void setArrivalsAndDepartures(ArrayList<ArrivalAndDeparture> arrivalsAndDepartures) {
+	public void setArrivalsAndDepartures(ArrayList<ArrivalDeparture> arrivalsAndDepartures) {
 		this.arrivalsAndDepartures = arrivalsAndDepartures;
 	}
 
