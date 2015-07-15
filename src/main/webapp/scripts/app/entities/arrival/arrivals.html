@@ -2,75 +2,51 @@
 
     <h2>Arrivals</h2>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <button class="btn btn-primary" ui-sref="arrival.new">
-                    <span class="glyphicon glyphicon-flash"></span> <span>Create a new Arrival</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="deleteArrivalConfirmation">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form name="deleteForm" ng-submit="confirmDelete(arrival.id)">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
-                                ng-click="clear()">&times;</button>
-                        <h4 class="modal-title">Confirm delete operation</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to delete this Arrival?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clear()">
-                            <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span>Cancel</span>
-                        </button>
-                        <button type="submit" ng-disabled="deleteForm.$invalid" class="btn btn-danger">
-                            <span class="glyphicon glyphicon-remove-circle"></span>&nbsp;<span>Delete</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
+	<h3>As of: {{arrivals.asOf}}</h3>
+	maxOutputSlots={{maxOutputSlots}}
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Foo</th>
-                    <th>Bar</th>
-                    <th></th>
+                    <th>Name</th>
+                    <th>Arrivals</th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="arrival in arrivals">
-                    <td><a ui-sref="arrival.detail({id:arrival.id})">{{arrival.id}}</a></td>
-                    <td>{{arrival.foo}}</td>
-                    <td>{{arrival.bar}}</td>
-                    <td>
-                        <button type="submit"
-                                ui-sref="arrival.detail({id:arrival.id})"
-                                class="btn btn-info btn-sm">
-                            <span class="glyphicon glyphicon-eye-open"></span>&nbsp;<span> View</span>
-                        </button>
-                        <button type="submit"
-                                ui-sref="arrival.edit({id:arrival.id})"
-                                class="btn btn-primary btn-sm">
-                            <span class="glyphicon glyphicon-pencil"></span>&nbsp;<span> Edit</span>
-                        </button>
-                        <button type="submit"
-                                ng-click="delete(arrival.id)"
-                                class="btn btn-danger btn-sm">
-                            <span class="glyphicon glyphicon-remove-circle"></span>&nbsp;<span> Delete</span>
-                        </button>
-                    </td>
+                <tr ng-repeat="station in arrivals.stations">
+                	<td>{{station.id}}</td>
+                	<td>{{station.name}}</td>
+                	<td>
+                		<ul>
+                			<li ng-repeat="myArrival in station.arrivals">
+                				<div style="background-color:{{myArrival.color}}">
+                				{{myArrival.routeShortName}}
+                				<!-- 
+                				<pre>{{myArrival | json}}</pre>
+                				 -->
+                				</div>
+                			</li>
+                		</ul>
+                	</td>
                 </tr>
             </tbody>
         </table>
     </div>
+
+
+	<div class="well">
+		<p>
+		arrivals.count={{arrivals.count}}
+		<br/>
+		arrivals.length={{arrivals.length}}
+		</p>
+		<p>
+			<pre>arrival={{arrival}}</pre>
+			<pre>arrivals={{arrivals}}</pre>
+			<pre>foo={{foo}}</pre>
+			<pre>$scope={{$scope}}</pre>
+		</p>
+	</div>
+
 </div>
