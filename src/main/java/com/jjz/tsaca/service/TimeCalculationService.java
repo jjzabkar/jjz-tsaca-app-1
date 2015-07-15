@@ -8,9 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.jjz.tsaca.domain.ArrivalDeparture;
 import com.jjz.tsaca.domain.Station;
-
-import fr.dudie.onebusaway.model.ArrivalAndDeparture;
 
 @Service
 public class TimeCalculationService {
@@ -37,10 +36,38 @@ public class TimeCalculationService {
 		colorMap.put(Long.MAX_VALUE, "off");
 	}
 
-	public String getColor(ArrivalAndDeparture aad, Station s) {
+	public String getColor(ArrivalDeparture aad, Station s) {
+		final long diffInSeconds = getDiffInSeconds(aad, s);
+		log.trace("\t\t diffInSeconds={}", (diffInSeconds));
+		if (diffInSeconds < 0L) {
+			return "off";
+		}
+		for (Entry<Long, String> entry : colorMap.entrySet()) {
+			Long l = entry.getKey();
+			if (diffInSeconds <= l) {
+				return entry.getValue();
+			}
+		}
 
+		return "purple";
+	}
+
+	/**
+	 * Calculate the estimated BOARDABLE time accounting for OBA's {@code scheduledDepartureTime} and my {@code travelTimeFromHomeToStation}
+	 * .
+	 * 
+	 * @param aad
+	 *            - provides {@code scheduledDepartureTime} WRT OneBusAway's {@link ArrivalDeparture}
+	 * @param s
+	 *            - provides {@code travelTimeFromHomeToStationInSeconds} WRT the {@link Station}
+	 * @return
+	 */
+	public Date getEstimatedBoardableTime(ArrivalDeparture aad, Station s) {
+		return new Date(getDiffInSeconds(aad, s));
+	};
+
+	private long getDiffInSeconds(ArrivalDeparture aad, Station s) {
 		log.trace("calculate time for route='{}'({})", aad.getRouteLongName(), aad.getRouteId());
-		// long travelTimeFromHomeToStationInSeconds = s.getTravelTimeFromHomeToStationInSeconds();
 		long travelTimeFromHomeToStationInMilliSeconds = s.getTravelTimeFromHomeToStationInSeconds() * 1000L;
 
 		Date now = new Date();
@@ -58,25 +85,13 @@ public class TimeCalculationService {
 		outputDate("myEstimatedArrivalDateAtStation", myEstimatedArrivalDateAtStation, now);
 
 		// 2. What's the diff between 'myEstimatedArrivalTimeAtStation' and 'scheduledDepartureTime'?
-		long diffInSeconds = (scheduledDepartureTime.getTime() - myEstimatedArrivalTimeAtStation) / 1000L;
-		log.trace("\t\t diffInSeconds={}", (diffInSeconds));
-		if (diffInSeconds < 0L) {
-			return "off";
-		}
-		for (Entry<Long, String> entry : colorMap.entrySet()) {
-			Long l = entry.getKey();
-			if (diffInSeconds <= l) {
-				return entry.getValue();
-			}
-		}
-
-		return "purple";
+		return (scheduledDepartureTime.getTime() - myEstimatedArrivalTimeAtStation) / 1000L;
 	}
 
 	private void outputDate(String s, Date d, Date now) {
 		long diff = d.getTime() - now.getTime();
 		long diffInSeconds = diff / 1000L;
 		log.trace("\t\t '{}'\t'{}'\t (diffInSeconds={})\t {}", d, d.getTime(), diffInSeconds, s);
-	};
+	}
 
 }

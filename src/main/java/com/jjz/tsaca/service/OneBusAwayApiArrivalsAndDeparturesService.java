@@ -1,7 +1,9 @@
 package com.jjz.tsaca.service;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,10 +18,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.jjz.tsaca.domain.Arrival;
+import com.jjz.tsaca.domain.ArrivalDeparture;
 import com.jjz.tsaca.domain.Route;
 import com.jjz.tsaca.domain.Station;
-
-import fr.dudie.onebusaway.model.ArrivalAndDeparture;
 
 @Service
 @ConfigurationProperties(prefix = "onebusaway.arrivalsAndDeparturesService", ignoreUnknownFields = false)
@@ -39,8 +41,8 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 	private TimeCalculationService timeCalculationService;
 	private String uri;
 
-	private ConcurrentHashMap<String, ArrivalAndDeparture> arrivalsMap = new ConcurrentHashMap<>();
-	private ConcurrentHashMap<String, List<ArrivalAndDeparture>> arrivalsPerStation = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, ArrivalDeparture> arrivalsMap = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, List<ArrivalDeparture>> arrivalsPerStation = new ConcurrentHashMap<>();
 
 	public String getUri() {
 		return uri;
@@ -53,9 +55,9 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 		this.uri = uri;
 	}
 
-	public List<ArrivalAndDeparture> fetchForStopId(String stopId) {
+	public List<ArrivalDeparture> fetchForStopId(String stopId) {
 		@SuppressWarnings("unchecked")
-		List<ArrivalAndDeparture> result = Collections.EMPTY_LIST;
+		List<ArrivalDeparture> result = Collections.EMPTY_LIST;
 		Map<String, Object> myMap = new HashMap<>();
 		myMap.put("stopId", stopId);
 
@@ -64,7 +66,7 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 				myMap);
 		if (response != null && response.getData() != null && response.getData().getEntry() != null) {
 			result = response.getData().getEntry().getArrivalsAndDepartures();
-			for (ArrivalAndDeparture ad : result) {
+			for (ArrivalDeparture ad : result) {
 				log.debug("stopId={},\t routeId={},\t ad={}", ad.getStopId(), ad.getRouteId(), ad);
 			}
 		}
@@ -76,15 +78,15 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 		log.info("fixedDelay()");
 		List<Station> stations = obaApiStationService.findAll();
 		List<Route> routeList = obaApiRouteService.findAll();
-		Map<String, ArrivalAndDeparture> newAads = new HashMap<>();
-		Map<String, List<ArrivalAndDeparture>> newArrivalsPerStation = new HashMap<>();
+		Map<String, ArrivalDeparture> newAads = new HashMap<>();
+		Map<String, List<ArrivalDeparture>> newArrivalsPerStation = new HashMap<>();
 
-		for (Station station : stations){
+		for (Station station : stations) {
 			final String stopId = station.getStopId();
 			log.info("stopId={},\t name='{}'", stopId, station.getName());
-			List<ArrivalAndDeparture> aadListForStation = fetchForStopId(stopId);
+			List<ArrivalDeparture> aadListForStation = fetchForStopId(stopId);
 			newArrivalsPerStation.put(stopId, aadListForStation);
-			for (ArrivalAndDeparture aad : aadListForStation) {
+			for (ArrivalDeparture aad : aadListForStation) {
 				final String routeId = aad.getRouteId();
 				for (Route r : routeList) {
 					if (routeId.equals(r.getRouteId())) {
@@ -105,34 +107,62 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 	}
 
 	// TODO: Do the Map or AAD need to be immutable?
-	public Map<String, ArrivalAndDeparture> getArrivalsMap() {
+	public Map<String, ArrivalDeparture> getArrivalsMap() {
 		return arrivalsMap;
 	}
 
 	public String fetchArduinoCsvData() {
 		StringBuilder output = new StringBuilder();
+		buildFetchedData(null, output);
+		return output.toString();
+	}
+
+	public Arrival getArrival() {
+		Arrival result = new Arrival();
+		buildFetchedData(result, null);
+		return result;
+	}
+
+	private void buildFetchedData(final Arrival arrivalOutput, final StringBuilder sbOutput) {
 		List<Station> stations = obaApiStationService.findAll();
 		for (Station s : stations) {
 			final Integer outputSlots = ObjectUtils.defaultIfNull(s.getOutputSlots(), new Integer(4));
 			final String stopId = s.getStopId();
-			output.append(stopId);
-			List<ArrivalAndDeparture> aadListForStation = this.arrivalsPerStation.get(stopId);
+			if (sbOutput != null) {
+				sbOutput.append(stopId);
+			} else if (arrivalOutput != null) {
+				arrivalOutput.addStation(s);
+				s.setArrivals(new LinkedList<ArrivalDeparture>());
+			}
+			List<ArrivalDeparture> aadListForStation = this.arrivalsPerStation.get(stopId);
 			for (int i = 0; i < outputSlots; i++) {
 				if (i < aadListForStation.size()) {
-					output.append(COMMA);
-					final ArrivalAndDeparture aad = aadListForStation.get(i);
+					if (sbOutput != null) {
+						sbOutput.append(COMMA);
+					}
+					final ArrivalDeparture aad = aadListForStation.get(i);
 					final String color = timeCalculationService.getColor(aad, s);
-					log.debug("color={}\t routeId={}\t stopId={}", color, aad.getRouteId(), s.getStopId());
+					final Date myEstimatedBoardableTime = timeCalculationService.getEstimatedBoardableTime(aad, s);
+					log.debug("color={}\t myEstimatedBoardableTime={}\t routeId={}\t stopId={}", color, myEstimatedBoardableTime,
+							aad.getRouteId(), s.getStopId());
 					log.debug("\tStop  Page: {}", obaApiStationService.getUrlForStopId(stopId));
-					output.append(color);
+					aad.setColor(color);
+					aad.setMyEstimatedBoardableTime(myEstimatedBoardableTime);
+					if (sbOutput != null) {
+						sbOutput.append(color);
+					} else if (arrivalOutput != null) {
+						s.getArrivals().add(aad);
+					}
 				} else {
-					output.append(COMMA).append("off");
+					if (sbOutput != null) {
+						sbOutput.append(COMMA).append("off");
+					}
 				}
 			}
-			output.append("\n");
+			if (sbOutput != null) {
+				sbOutput.append("\n");
+			}
 		}
-
-		return output.toString();
 	}
 
 }
