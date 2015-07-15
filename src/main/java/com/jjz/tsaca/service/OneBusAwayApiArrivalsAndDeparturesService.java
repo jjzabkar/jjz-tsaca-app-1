@@ -1,6 +1,7 @@
 package com.jjz.tsaca.service;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.onebusaway.model.OBAGetArrivalsAndDeparturesResponse;
 import org.slf4j.Logger;
@@ -18,9 +20,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 import com.jjz.tsaca.domain.Arrival;
 import com.jjz.tsaca.domain.ArrivalDeparture;
 import com.jjz.tsaca.domain.Route;
+import com.jjz.tsaca.domain.SortableColor;
 import com.jjz.tsaca.domain.Station;
 
 @Service
@@ -135,19 +140,25 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 				s.setArrivals(new LinkedList<ArrivalDeparture>());
 			}
 			List<ArrivalDeparture> aadListForStation = this.arrivalsPerStation.get(stopId);
+			for (ArrivalDeparture aad : aadListForStation) {
+				final String color = timeCalculationService.getColor(aad, s);
+				final Date myEstimatedBoardableTime = timeCalculationService.getEstimatedBoardableTime(aad, s);
+				aad.setColor(color);
+				aad.setMyEstimatedBoardableTime(myEstimatedBoardableTime);
+			}
+			aadListForStation.sort(sortByColorThenBoardableTimeComparator);
+
 			for (int i = 0; i < outputSlots; i++) {
 				if (i < aadListForStation.size()) {
 					if (sbOutput != null) {
 						sbOutput.append(COMMA);
 					}
 					final ArrivalDeparture aad = aadListForStation.get(i);
-					final String color = timeCalculationService.getColor(aad, s);
-					final Date myEstimatedBoardableTime = timeCalculationService.getEstimatedBoardableTime(aad, s);
+					final String color = aad.getColor();
+					final Date myEstimatedBoardableTime = aad.getMyEstimatedBoardableTime();
 					log.debug("color={}\t myEstimatedBoardableTime={}\t routeId={}\t stopId={}", color, myEstimatedBoardableTime,
 							aad.getRouteId(), s.getStopId());
 					log.debug("\tStop  Page: {}", obaApiStationService.getUrlForStopId(stopId));
-					aad.setColor(color);
-					aad.setMyEstimatedBoardableTime(myEstimatedBoardableTime);
 					if (sbOutput != null) {
 						sbOutput.append(color);
 					} else if (arrivalOutput != null) {
@@ -156,6 +167,10 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 				} else {
 					if (sbOutput != null) {
 						sbOutput.append(COMMA).append("off");
+					} else if (arrivalOutput != null) {
+						ArrivalDeparture newAad = new ArrivalDeparture();
+						newAad.setColor("off");
+						s.getArrivals().add(newAad);
 					}
 				}
 			}
@@ -164,5 +179,16 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 			}
 		}
 	}
+
+	public static Comparator<ArrivalDeparture> sortByColorThenBoardableTimeComparator = new Comparator<ArrivalDeparture>() {
+		@Override
+		public int compare(ArrivalDeparture o1, ArrivalDeparture o2) {
+			return ComparisonChain.start() //
+					.compare(SortableColor.valueOf(StringUtils.upperCase(o1.getColor())), //
+							SortableColor.valueOf(StringUtils.upperCase(o2.getColor()))) //
+					.compare(o1.getMyEstimatedBoardableTime(), o2.getMyEstimatedBoardableTime(), Ordering.natural().nullsLast())//
+					.result();
+		}
+	};
 
 }
