@@ -1,41 +1,40 @@
 <div>
 
-    <h2>Arrivals</h2>
+    <h2>Arrivals<span ng-show="arrivals.asOf" ng-cloak>, as of: {{arrivals.asOf}}</span></h2>
 
-	<h3>As of: {{arrivals.asOf}}</h3>
-	maxOutputSlots={{maxOutputSlots}}
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Arrivals</th>
+                    <th>Stop</th>
+                    <th>Soonest to Latest</th>
+                    <!-- <th>Debug</th> -->
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="station in arrivals.stations">
-                	<td>{{station.id}}</td>
-                	<td>{{station.name}}</td>
+                	<!-- <td>{{station.id}}</td> -->
                 	<td>
-                		<ul>
-                			<li ng-repeat="myArrival in station.arrivals">
-                				<div style="background-color:{{myArrival.color}}">
-                				{{myArrival.routeShortName}}
-                				<!-- 
-                				<pre>{{myArrival | json}}</pre>
-                				 -->
-                				</div>
-                			</li>
-                		</ul>
+                		<a ng-href="http://pugetsound.onebusaway.org/where/standard/stop.action?id={{station.stopId}}"><i class="fa fa-bus"></i></a>
+                		<a ng-href="#/station/{{station.id}}"><span class="glyphicon glyphicon-eye-open"></span></a>
+                		{{station.name}}
+                	</td>
+                	<td >
+          				<div style="background-color:{{myArrival.color}}" class="btn btn-sm btn-default" ng-repeat="myArrival in station.arrivals" ng-show="myArrival.tripId">
+          				{{myArrival.routeShortName || myArrival.routeLongName }}
+          				</div>
+                	</td>
+                	<td>
+                	<pre ng-hide='true'>station={{station|json}}
+                		
+                	</pre>
                 	</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-
-	<div class="well">
+	<div class="well" ng-hide='true'>
 		<p>
 		arrivals.count={{arrivals.count}}
 		<br/>
