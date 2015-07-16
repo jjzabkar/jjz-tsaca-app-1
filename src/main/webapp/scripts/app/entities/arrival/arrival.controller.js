@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('jjztsacaapp1App').controller('ArrivalController', function($scope, Arrival) {
+angular.module('jjztsacaapp1App').controller('ArrivalController', [ '$scope', 'Arrival', function ArrivalControllerFn($scope, Arrival) {
 	$scope.arrivals = {};
 	$scope.maxOutputSlots = 2;
 	$scope.loadAll = function loadAllFn() {
@@ -17,14 +17,6 @@ angular.module('jjztsacaapp1App').controller('ArrivalController', function($scop
 
 	$scope.refresh = function() {
 		$scope.loadAll();
-		$scope.clear();
 	};
 
-	$scope.clear = function() {
-		$scope.arrival = {
-			foo : null,
-			bar : null,
-			id : null
-		};
-	};
-});
+} ]);

@@ -15,12 +15,19 @@
 	                <div class="alert alert-success">
 	                    You are logged in as user "{{account.login}}".
 	                </div>
-		            <p>
-		            	<ol>
-		            		<li><a href="#/stations">Create a Station</a></li>
-		            		<li><a href="#/routes">Create a Route</a></li>
-		            	</ol>
-		            </p>
+	                <div ng-switch="hasArrivals()">
+		                <div ng-switch-when="true">
+		                	<div ng-include="'/scripts/app/entities/arrival/arrivals.html'"> </div>
+		                </div>
+		                <div ng-switch-when="false">
+				            <p>
+				            	<ol>
+				            		<li><a href="#/stations">Create a Station</a></li>
+				            		<li><a href="#/routes">Create a Route</a></li>
+				            	</ol>
+				            </p>
+		                </div>
+	                </div>
 				</div>
                 <div ng-switch-when="false">
 		            <p class="lead">This is TimedFrame.</p>
