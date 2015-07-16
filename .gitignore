@@ -102,7 +102,6 @@ Desktop.ini
 /build/**
 /bin/**
 /spring_loaded/**
-/deploy/**
 
 ######################
 # Logs
@@ -124,3 +123,9 @@ Desktop.ini
 /target/
 src/main/resources/config/application-dev.yml
 .factorypath
+
+######################
+# Custom
+######################
+pom.xml.releaseBackup
+release.properties
