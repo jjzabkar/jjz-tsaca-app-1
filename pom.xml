@@ -11,7 +11,7 @@
 
     <groupId>com.jjz.tsaca</groupId>
     <artifactId>jjztsacaapp1</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>jjztsacaapp1</name>
@@ -19,6 +19,11 @@
     <prerequisites>
         <maven>3.0.0</maven>
     </prerequisites>
+
+    <scm>
+        <developerConnection>scm:git:git@github.com:jjzabkar/jjz-tsaca-app-1.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <HikariCP.version>2.3.9</HikariCP.version>
@@ -53,10 +58,6 @@
         <springfox.version>2.0.3</springfox.version>
         <usertype-core.version>4.0.0.GA</usertype-core.version>
     </properties>
-    
-    <scm>
-    	<developerConnection>scm:git:git@github.com:jjzabkar/jjz-tsaca-app-1.git</developerConnection>
-    </scm>
 
     <dependencies>
         <dependency>
