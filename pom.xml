@@ -53,6 +53,10 @@
         <springfox.version>2.0.3</springfox.version>
         <usertype-core.version>4.0.0.GA</usertype-core.version>
     </properties>
+    
+    <scm>
+    	<developerConnection>scm:git:git@github.com:jjzabkar/jjz-tsaca-app-1.git</developerConnection>
+    </scm>
 
     <dependencies>
         <dependency>
