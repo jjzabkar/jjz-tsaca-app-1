@@ -29,23 +29,26 @@ unsigned long DEFAULT_LOOP_TIME_MILLIS = 60000;
 unsigned long MIN_LOOP_TIME_MILLIS = 5000;
 unsigned long loopCount = 0;
 
+//per: http://playground.arduino.cc/Main/StreamingOutput
+template<class T> inline Print &operator <<(Print &obj, T arg) { obj.print(arg); return obj; }
+
 void setup(void)
 {
   Serial.begin(115200);
   initializeWifi();
+  setStaticIpAddress();
 }
 
 
 void loop(void){
   unsigned long startLoopMillis = millis();
-  setStaticIpAddress();
   connectToWifiNetwork();
   //doArduinoPingTest();
   doWebClientTest();
   disconnectFromWifiNetwork();
   unsigned long elapsedLoopMillis = millis() - startLoopMillis;
   unsigned long sleepTime = max(MIN_LOOP_TIME_MILLIS, DEFAULT_LOOP_TIME_MILLIS - elapsedLoopMillis);
-  Serial.print(F("*** Sleep for ")); Serial.print(sleepTime); Serial.println("ms ****"); 
+  Serial << "*** Sleep for " << sleepTime << "ms ****\r\n"; 
   delay(sleepTime);
 }
 
@@ -57,7 +60,7 @@ void connectToWebSite(void){
      Note: HTTP/1.1 protocol is used to keep the server from closing the connection before all data is read.
   */
   Serial.println(F("\r\n-------------------------------------"));
-  Serial.print(F("GET ")); Serial.print(WEBPAGE); Serial.println(WEBSITE);
+  Serial << "GET " << WEBPAGE << WEBSITE << "\r\n";
 
   Adafruit_CC3000_Client www = cc3000.connectTCP(ip, 80);
   if (www.connected()) {
@@ -94,10 +97,10 @@ void doWebClientTest(void){
     ip = 0;
     Serial.println(F("Try looking up the website's IP address by Host Name"));
   }
-  Serial.print(WEBSITE); Serial.print(F(" -> "));
+  Serial << WEBSITE << " -> ";
   while (ip == 0) {
     if (! cc3000.getHostByName(WEBSITE, &ip)) {
-      Serial.println(F("Couldn't resolve!"));
+      //Serial.println(F("Couldn't resolve!"));
     }
     delay(500);
   }
@@ -123,7 +126,7 @@ void doArduinoPingTest(){
   long delayed = 200 ;
   while  (ip  ==  0)  {
     if  (!  cc3000.getHostByName("www.adafruit.com", &ip))  {
-      Serial.print(F("    Couldn't resolve 'getHostByName'!   ip=")); Serial.println(ip);
+      Serial << "    Couldn't resolve 'getHostByName'!   ip=" << ip << "\r\n";
     }
     delay(delayed);
     delayed = delayed + 200;
@@ -150,7 +153,7 @@ void doArduinoPingTest(){
 
 void connectToWifiNetwork(void){
   char *ssid = WLAN_SSID;             /* Max 32 chars */
-  Serial.print(F("\nAttempting to connect to ")); Serial.println(ssid);
+  Serial << "\nAttempting to connect to " << ssid;
   unsigned long time1 = millis();
   if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
     Serial.println(F("Failed!"));
@@ -163,7 +166,7 @@ void connectToWifiNetwork(void){
     delay(100); // ToDo: Insert a DHCP timeout!
   }  
   unsigned long time2 = ( millis() - time1 );
-  Serial.print(F("Connected! (")); Serial.print(time2); Serial.println(F("ms)"));
+  Serial << "Connected! (" << time2 << "ms)";
 }
 
 
