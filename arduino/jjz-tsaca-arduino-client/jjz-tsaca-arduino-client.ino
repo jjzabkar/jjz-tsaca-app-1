@@ -27,19 +27,18 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 uint32_t ip = 0;
 unsigned long DEFAULT_LOOP_TIME_MILLIS = 60000;
 unsigned long MIN_LOOP_TIME_MILLIS = 5000;
-
+unsigned long loopCount = 0;
 
 void setup(void)
 {
   Serial.begin(115200);
   initializeWifi();
-  setStaticIpAddress();
-  connectToWifiNetwork();
 }
 
 
 void loop(void){
   unsigned long startLoopMillis = millis();
+  setStaticIpAddress();
   connectToWifiNetwork();
   //doArduinoPingTest();
   doWebClientTest();
@@ -91,7 +90,10 @@ void connectToWebSite(void){
 
 
 void doWebClientTest(void){
-  // Try looking up the website's IP address
+  if ((loopCount % 20) == 0){
+    ip = 0;
+    Serial.println(F("Try looking up the website's IP address by Host Name"));
+  }
   Serial.print(WEBSITE); Serial.print(F(" -> "));
   while (ip == 0) {
     if (! cc3000.getHostByName(WEBSITE, &ip)) {
@@ -102,6 +104,7 @@ void doWebClientTest(void){
   cc3000.printIPdotsRev(ip);
 
   connectToWebSite();
+
 }
 
 
@@ -184,6 +187,6 @@ void setStaticIpAddress(void){
     Serial.println(F("Failed to set static IP!"));
     while(1);
   }
-  Serial.print(F("Set Static IP Address to ")); Serial.println(ipAddress);
+  Serial.print(F("Set Static IP Address to 192.168.1.19"));
 }
 
