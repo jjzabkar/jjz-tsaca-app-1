@@ -54,6 +54,9 @@ void loop(void){
 
 
 
+// Read HTTP response data to String, per: http://stackoverflow.com/a/12439969/237225
+String content = "";
+
 void connectToWebSite(void){
 
   /* Try connecting to the website.
@@ -76,21 +79,22 @@ void connectToWebSite(void){
   }
 
   Serial.println(F("\r\n-------------------------------------"));
-  
+
+  content = "";
   /* Read data until either the connection is closed, or the idle timeout is reached. */ 
   unsigned long lastRead = millis();
   while (www.connected() && (millis() - lastRead < IDLE_TIMEOUT_MS)) {
     while (www.available()) {
       char c = www.read();
-      Serial.print(c);
+      content.concat(c);
       lastRead = millis();
     }
   }
   www.close();
+  Serial.println(content);
   Serial.println(F("-------------------------------------"));
   
 }
-
 
 void doWebClientTest(void){
   if ((loopCount % 20) == 0){
