@@ -2,7 +2,7 @@
 #include <ccspi.h>
 #include <SPI.h>
 #include <string.h>
-#include "utility/debug.h"
+//#include "utility/debug.h"
 
 // These are the interrupt and control pins
 #define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
@@ -24,32 +24,25 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 // What page to grab!
 #define WEBSITE      "jjztsacaapp1.cfapps.io"
 #define WEBPAGE      "/arrivals/csv"
+#define DASHES       "\n----------------------------------------------\n"
 uint32_t ip = 0;
-unsigned long DEFAULT_LOOP_TIME_MILLIS = 60000;
-unsigned long MIN_LOOP_TIME_MILLIS = 5000;
+const unsigned long DEFAULT_LOOP_TIME_MILLIS = 60000;
+const unsigned long MIN_LOOP_TIME_MILLIS = 5000;
 unsigned long loopCount = 0;
 
 //per: http://playground.arduino.cc/Main/StreamingOutput
 template<class T> inline Print &operator <<(Print &obj, T arg) { obj.print(arg); return obj; }
+template<class T> inline Print &operator <<(Adafruit_CC3000_Client &obj, T arg) { obj.fastrprint(arg); return obj; }
 
-// LED leads connected to PWM pins
-// Used by Wifi: 3,4,5,9,10,11,12,13
+// LED leads connected to PWM pins for CC3000 Wifi: 3,4,5,9,10,11,12,13
 const int RED_LED_PIN = 6;  
 const int GREEN_LED_PIN = 7; 
 const int BLUE_LED_PIN = 8; 
-unsigned char httpContent[1024]; // buffer array for data recieve over serial port
+
+char httpContent[256]; // buffer array for data recieve over serial port
 int contentLength = 0; // MAX= 32,767 (2^15 -1 )
 
-//On the CC3000 shield, we use the following pin connections
-//SCK - #13
-//MISO #12
-//MOSI #11
-//CS for CC3000 #10
-//VBAT_EN #5
-//CS for SD Card #4
-//IRQ #3
-
-// Used to store the current intensity level of the individual LEDs
+// Current intensity level of the individual LEDs
 int redIntensity = 0;
 int greenIntensity = 0;
 int blueIntensity = 0;
@@ -62,7 +55,6 @@ void setup(void)
 {
   Serial.begin(115200);
   configureRGBOutputPins();
-  setColorRGB(255,255,255);
   setColorRGB(254,0,0); //red
   initializeWifi();
   setColorRGB(254,140,0); //orange
@@ -72,9 +64,9 @@ void setup(void)
 
 
 void loop(void){
-  doLedLoop();
+//  doLedLoop();
   unsigned long startLoopMillis = millis();
-  setColorRGB(255,255,255); // white
+  setColorRGB(0,254,0); // green
   connectToWifiNetwork();
   //doArduinoPingTest();
   setColorRGB(255,200,0); // yellow
@@ -90,57 +82,57 @@ void loop(void){
 }
 
 
-
-// Read HTTP response data to String, per: http://stackoverflow.com/a/12439969/237225
-String content = "";
-
 void connectToWebSite(void){
-
   /* Try connecting to the website.
-     Note: HTTP/1.1 protocol is used to keep the server from closing the connection before all data is read.
-  */
-  Serial.println(F("\r\n-------------------------------------"));
-  Serial << "GET " << WEBPAGE << WEBSITE << "\r\n";
-
+     Note: HTTP/1.1 protocol is used to keep the server from closing the connection before all data is read.   */
+  Serial << DASHES << "Connecting...\n";
   Adafruit_CC3000_Client www = cc3000.connectTCP(ip, 80);
+  Serial << "GET http://"  << WEBSITE << WEBPAGE << "\n";
   if (www.connected()) {
-    www.fastrprint(F("GET "));
-    www.fastrprint(WEBPAGE);
-    www.fastrprint(F(" HTTP/1.1\r\n"));
-    www.fastrprint(F("Host: ")); www.fastrprint(WEBSITE); www.fastrprint(F("\r\n"));
-    www.fastrprint(F("\r\n"));
+    www << "GET " << WEBPAGE << " HTTP/1.1\r\n" << "Host: " << WEBSITE << "\r\n\r\n";
+//    www.fastrprint(F("GET "));
+//    www.fastrprint(WEBPAGE);
+//    www.fastrprint(F(" HTTP/1.1\r\n"));
+//    www.fastrprint(F("Host: ")); www.fastrprint(WEBSITE); www.fastrprint(F("\r\n"));
+//    www.fastrprint(F("\r\n"));
     www.println();
   } else {
     Serial.println(F("Connection failed"));    
     return;
   }
 
-  Serial.println(F("\r\n-------------------------------------"));
+  Serial << DASHES;
 
-  content = "";
-//  contentLength = 0; // reset!
+  contentLength = 0; // reset!
   /* Read data until either the connection is closed, or the idle timeout is reached. */ 
+  Serial << "Reading data...\n";
   unsigned long lastRead = millis();
   while (www.connected() && (millis() - lastRead < IDLE_TIMEOUT_MS)) {
     while (www.available()) {
       char c = www.read();
-      content.concat(c);
-//      httpContent[contentLength] = c;
-//      contentLength++;
+      if (contentLength < 512 ) {
+        httpContent[contentLength++] = c;
+        if ( c == '\n' ){
+          //Serial << "Read line: ";
+          Serial.write(httpContent,contentLength);
+          contentLength = 0;
+        }
+      }
       lastRead = millis();
     }
   }
+  httpContent[contentLength] = '\0'; // null-terminate string
   www.close();
-  Serial.println(content);
-//  String str(httpContent);
-//  Serial.println(str);
-  Serial.println(F("-------------------------------------"));
+  Serial << "Done Reading data.\n";
+  Serial.write(httpContent,contentLength);
+  Serial << "\nContent Length = " << contentLength << DASHES;
 }
+
 
 void doWebClientTest(void){
   if ((loopCount % 20) == 0){
     ip = 0;
-    Serial.println(F("Try looking up the website's IP address by Host Name"));
+    Serial << "Try looking up the website's IP address by Host Name\n";
   }
   Serial << WEBSITE << " -> ";
   while (ip == 0) {
@@ -164,38 +156,6 @@ void disconnectFromWifiNetwork(void){
 }
 
 
-void doArduinoPingTest(){
-
-  uint32_t ip = 0;
-  Serial.println(F("Lookup Host for www.adafruit.com"));
-  long delayed = 200 ;
-  while  (ip  ==  0)  {
-    if  (!  cc3000.getHostByName("www.adafruit.com", &ip))  {
-      Serial << "    Couldn't resolve 'getHostByName'!   ip=" << ip << "\r\n";
-    }
-    delay(delayed);
-    delayed = delayed + 200;
-  }  
-  cc3000.printIPdotsRev(ip);
-
-  for(int x = 0; x < 10; x = x + 1){
-      Serial.print(F("\n\r**** Ping Test ")); Serial.print(x); Serial.print("***");
-      Serial.print(F("\n\r    Do a quick ping test on adafruit.com"));
-      Serial.print(F("\n\r    Pinging ")); cc3000.printIPdotsRev(ip); Serial.print("...");  
-      uint8_t replies = cc3000.ping(ip, 5);
-      Serial.print(replies); Serial.println(F(" replies"));
-      if (replies){
-        Serial.println(F("\n\r    Ping successful!"));
-        x = 10 ;
-      }else{
-        Serial.println(F("\n\r    Ping failed.  Wait 500ms."));
-      }
-      delay(500);
-  }
-
-  
-}
-
 void connectToWifiNetwork(void){
   char *ssid = WLAN_SSID;             /* Max 32 chars */
   Serial << "\nAttempting to connect to " << ssid;
@@ -210,19 +170,18 @@ void connectToWifiNetwork(void){
     Serial.print(F("."));
     delay(100); // ToDo: Insert a DHCP timeout!
   }  
-  unsigned long time2 = ( millis() - time1 );
-  Serial << "Connected! (" << time2 << "ms)";
+  Serial << "Connected! (" << ( millis() - time1 ) << "ms)";
 }
 
 
 void initializeWifi(void){
-  Serial.println(F("\nInitialising the CC3000 ..."));
+  Serial << "\nInitialising the CC3000 ...\n";
   if (!cc3000.begin())
   {
-    Serial.println(F("Unable to initialise the CC3000! Check your wiring?"));
+    Serial << "\nUnable to initialise the CC3000! Check your wiring?\n";
     while(1);
   }
-  Serial.println(F("Initialized the CC3000"));
+  Serial << "\nInitialized the CC3000\n";
 }
 
 
@@ -232,13 +191,14 @@ void setStaticIpAddress(void){
   uint32_t defaultGateway = cc3000.IP2U32(192, 168, 1, 1);
   uint32_t dns = cc3000.IP2U32(8, 8, 4, 4);
   if (!cc3000.setStaticIPAddress(ipAddress, netMask, defaultGateway, dns)) {
-    Serial.println(F("Failed to set static IP!"));
+    Serial << "\nFailed to set static IP!\n";
     while(1);
   }
-  Serial.print(F("Set Static IP Address to 192.168.1.19"));
+  Serial << "\nSet Static IP Address to 192.168.1.19";
 }
 
 
+/*
 void doLedLoop(){
   Serial << "\ndoLedLoop()";
   // Cycle color from red through to green
@@ -275,7 +235,7 @@ void doLedLoop(){
   }
 
 }
-
+*/
 
 void configureRGBOutputPins(void){
   Serial << "\n  Configure RGB pins ("<< RED_LED_PIN << ","<< GREEN_LED_PIN << ","<< BLUE_LED_PIN << ") as OUTPUT.\n";
