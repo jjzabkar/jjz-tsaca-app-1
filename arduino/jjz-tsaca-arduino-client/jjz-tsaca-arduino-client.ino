@@ -32,24 +32,61 @@ unsigned long loopCount = 0;
 //per: http://playground.arduino.cc/Main/StreamingOutput
 template<class T> inline Print &operator <<(Print &obj, T arg) { obj.print(arg); return obj; }
 
+// LED leads connected to PWM pins
+// Used by Wifi: 3,4,5,9,10,11,12,13
+const int RED_LED_PIN = 6;  
+const int GREEN_LED_PIN = 7; 
+const int BLUE_LED_PIN = 8; 
+unsigned char httpContent[1024]; // buffer array for data recieve over serial port
+int contentLength = 0; // MAX= 32,767 (2^15 -1 )
+
+//On the CC3000 shield, we use the following pin connections
+//SCK - #13
+//MISO #12
+//MOSI #11
+//CS for CC3000 #10
+//VBAT_EN #5
+//CS for SD Card #4
+//IRQ #3
+
+// Used to store the current intensity level of the individual LEDs
+int redIntensity = 0;
+int greenIntensity = 0;
+int blueIntensity = 0;
+
+// Length of time we spend showing each color
+const int DISPLAY_TIME = 60; // In milliseconds
+
+
 void setup(void)
 {
   Serial.begin(115200);
+  configureRGBOutputPins();
+  setColorRGB(255,255,255);
+  setColorRGB(254,0,0); //red
   initializeWifi();
+  setColorRGB(254,140,0); //orange
   setStaticIpAddress();
+  setColorRGB(255,200,0); // yellow
 }
 
 
 void loop(void){
+  doLedLoop();
   unsigned long startLoopMillis = millis();
+  setColorRGB(255,255,255); // white
   connectToWifiNetwork();
   //doArduinoPingTest();
+  setColorRGB(255,200,0); // yellow
   doWebClientTest();
+  setColorRGB(0,254,0); // green
   disconnectFromWifiNetwork();
+  delay(5000);
   unsigned long elapsedLoopMillis = millis() - startLoopMillis;
   unsigned long sleepTime = min(max(MIN_LOOP_TIME_MILLIS, DEFAULT_LOOP_TIME_MILLIS - elapsedLoopMillis), DEFAULT_LOOP_TIME_MILLIS);
   Serial << "*** Sleep for " << sleepTime << "ms ****\r\n"; 
-  delay(sleepTime);
+//  delay(sleepTime);
+
 }
 
 
@@ -81,19 +118,23 @@ void connectToWebSite(void){
   Serial.println(F("\r\n-------------------------------------"));
 
   content = "";
+//  contentLength = 0; // reset!
   /* Read data until either the connection is closed, or the idle timeout is reached. */ 
   unsigned long lastRead = millis();
   while (www.connected() && (millis() - lastRead < IDLE_TIMEOUT_MS)) {
     while (www.available()) {
       char c = www.read();
       content.concat(c);
+//      httpContent[contentLength] = c;
+//      contentLength++;
       lastRead = millis();
     }
   }
   www.close();
   Serial.println(content);
+//  String str(httpContent);
+//  Serial.println(str);
   Serial.println(F("-------------------------------------"));
-  
 }
 
 void doWebClientTest(void){
@@ -195,5 +236,63 @@ void setStaticIpAddress(void){
     while(1);
   }
   Serial.print(F("Set Static IP Address to 192.168.1.19"));
+}
+
+
+void doLedLoop(){
+  Serial << "\ndoLedLoop()";
+  // Cycle color from red through to green
+  // (In this loop we move from 100% red, 0% green to 0% red, 100% green)
+  analogWrite(BLUE_LED_PIN, 255);
+  Serial << "\ndoLedLoop(): red/green";
+  for (greenIntensity = 0; greenIntensity <= 255; greenIntensity+=5) {
+        redIntensity = 255-greenIntensity;
+        analogWrite(GREEN_LED_PIN, greenIntensity);
+        analogWrite(RED_LED_PIN, redIntensity);
+        delay(DISPLAY_TIME);
+  }
+
+  // Cycle color from green through to blue
+  // (In this loop we move from 100% green, 0% blue to 0% green, 100% blue)  
+  Serial << "\ndoLedLoop(): green/blue";
+  analogWrite(RED_LED_PIN, 255);
+  for (blueIntensity = 0; blueIntensity <= 255; blueIntensity+=5) {
+        greenIntensity = 255-blueIntensity;
+        analogWrite(BLUE_LED_PIN, blueIntensity);
+        analogWrite(GREEN_LED_PIN, greenIntensity);
+        delay(DISPLAY_TIME);
+  }
+
+  // Cycle cycle from blue through to red
+  // (In this loop we move from 100% blue, 0% red to 0% blue, 100% red)    
+  analogWrite(GREEN_LED_PIN, 255);
+  Serial << "\ndoLedLoop(): blue/red";
+  for (redIntensity = 0; redIntensity <= 255; redIntensity+=5) {
+        blueIntensity = 255-redIntensity;
+        analogWrite(RED_LED_PIN, redIntensity);
+        analogWrite(BLUE_LED_PIN, blueIntensity);
+        delay(DISPLAY_TIME);
+  }
+
+}
+
+
+void configureRGBOutputPins(void){
+  Serial << "\n  Configure RGB pins ("<< RED_LED_PIN << ","<< GREEN_LED_PIN << ","<< BLUE_LED_PIN << ") as OUTPUT.\n";
+  pinMode(RED_LED_PIN, OUTPUT);
+  pinMode(GREEN_LED_PIN, OUTPUT);
+  pinMode(BLUE_LED_PIN, OUTPUT);
+}
+
+
+void setColorRGB (int r, int g, int b){
+  Serial << "\n  Set LED to RGB (" << r << ","<< g << ","<< b << ")  pins ("<< RED_LED_PIN << ","<< GREEN_LED_PIN << ","<< BLUE_LED_PIN << ")\n";
+  redIntensity= 255 - r;
+  analogWrite(RED_LED_PIN, redIntensity);
+  greenIntensity=255 - g;
+  analogWrite(GREEN_LED_PIN, greenIntensity);
+  blueIntensity=255 - b;
+  analogWrite(BLUE_LED_PIN, blueIntensity);  
+  delay(500);
 }
 
