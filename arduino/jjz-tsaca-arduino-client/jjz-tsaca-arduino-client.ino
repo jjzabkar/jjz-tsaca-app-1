@@ -47,7 +47,7 @@ void loop(void){
   doWebClientTest();
   disconnectFromWifiNetwork();
   unsigned long elapsedLoopMillis = millis() - startLoopMillis;
-  unsigned long sleepTime = max(MIN_LOOP_TIME_MILLIS, DEFAULT_LOOP_TIME_MILLIS - elapsedLoopMillis);
+  unsigned long sleepTime = min(max(MIN_LOOP_TIME_MILLIS, DEFAULT_LOOP_TIME_MILLIS - elapsedLoopMillis), DEFAULT_LOOP_TIME_MILLIS);
   Serial << "*** Sleep for " << sleepTime << "ms ****\r\n"; 
   delay(sleepTime);
 }
