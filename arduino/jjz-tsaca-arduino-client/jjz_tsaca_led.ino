@@ -18,23 +18,17 @@ int LATCH_74HC595_PIN = 8;  // original: 8
 int ledState = 0;
 const int ON = HIGH;
 const int OFF = LOW;
-                        
+
+String multiLed1="";
+String multiLed2="";
 
 void configureRGBOutputPins(void){
-//  Serial << "\n NO-OP: 'configureRGBOutputPins' \n";
   pinMode(DATA_74HC595_PIN, OUTPUT);
   pinMode(CLOCK_74HC595_PIN, OUTPUT);  
   pinMode(LATCH_74HC595_PIN, OUTPUT);  
   for (int led = 0; led < 8; led++){
-    Serial << "\nInitialize LED " << led ;
     changeLED(led,0) ; //0 = OFF
   }
-}
-
-
-// DEPRECATED
-void setColorRGB (int r, int g, int b){
-  Serial << "\n NO-OP: 'setColorRGB' \n";
 }
 
 
@@ -61,3 +55,57 @@ int masks[] = {B11111110, B11111101, B11111011, B11110111, B11101111, B11011111,
    if(state == ON){ledState = ledState | bits[led];} //if the bit is on we will add it to ledState
    updateLEDs(ledState);              //send the new LED state to the shift register
  }
+
+
+
+
+int getLedStateForColor(char c, String color){
+//  Serial << "\n  getLedStateForColor" << c << " , " << color <<  "      ON=HIGH";
+  if( color == "red" &&  c == 'r' ){
+    return ON; 
+  }else if( color == "green" && c == 'g' ){
+    return ON;
+  }else if( color == "blue" && c == 'b' ){
+    return ON;
+  }else if( color == "yellow" &&  c != 'b' ){
+    return ON;
+  }else if( color == "purple" &&  c != 'g' ){
+    return ON;
+  }else if( color == "white" ){
+    return ON;
+  }
+  return OFF;
+}
+
+
+const char rgbArr[3] = { 'r', 'g', 'b' };
+int rgbState = 0;
+/**
+ * Specific to 2 multi-leds driven by a 74HC595 chip
+ */
+void setMultiLed74HC595(int led, String color){
+  Serial << "\n  Setting led " << led << " to '" << color << "'";
+  int startAtLed = -1;
+  if(led == 1){
+    startAtLed = 0;
+    multiLed1 = color;
+  }else if(led == 2){
+    startAtLed = 3;    
+    multiLed2 = color;
+  }else{
+    Serial << "\nError: Unexpected value ( !1 !2 ) for led: '" << led << "'\n";
+    return ;
+  }
+
+  for( int rgbIdx = 0; rgbIdx < 3; rgbIdx++){
+    rgbState = getLedStateForColor(rgbArr[rgbIdx],color);
+    changeLED(startAtLed++, rgbState);
+  }
+
+//  Serial << "\n  Set multiLeds.  1=" << multiLed1 << ", 2=" << multiLed2;
+}
+
+
+
+
+ 
