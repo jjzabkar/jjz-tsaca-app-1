@@ -24,7 +24,11 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 #define WLAN_SECURITY   WLAN_SEC_WPA // Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 #define IDLE_TIMEOUT_MS  3000      // Amount of time to wait (in milliseconds) with no data received before closing the connection.
 #define WEBSITE      "jjztsacaapp1.cfapps.io" // What page to grab!
+#define WEBSITE_PORT 80
 #define WEBPAGE      "/arrivals/csv"
+//#define WEBSITE      "192.168.1.12"
+//#define WEBSITE_PORT   8080
+//#define WEBPAGE      "/arrivals/test"
 #define DASHES       "\n----------------------------------------------\n"
 uint32_t ip = 0;
 
@@ -39,7 +43,7 @@ void connectToWebSite(void){
   /* Try connecting to the website.  Note: HTTP/1.1 protocol is used 
      to keep the server from closing the connection before all data is read.   */
   Serial << DASHES << "Connecting...\n";
-  Adafruit_CC3000_Client www = cc3000.connectTCP(ip, 80);
+  Adafruit_CC3000_Client www = cc3000.connectTCP(ip, WEBSITE_PORT);
   Serial << "GET http://"  << WEBSITE << WEBPAGE << "\n";
   if (www.connected()) {
     www << "GET " << WEBPAGE << " HTTP/1.1\r\n" << "Host: " << WEBSITE << "\r\n\r\n";
@@ -62,15 +66,17 @@ void connectToWebSite(void){
         if ( c == '\n' ){
           Serial.write(httpContent,contentLength);
           contentLength = 0;
+          String s = String(httpContent);
+          Serial << "\n  s="<< s ;
         }
       }
       lastRead = millis();
     }
   }
-  httpContent[contentLength] = '\0'; // null-terminate string
+  //httpContent[contentLength] = '\0'; // null-terminate string
   www.close();
   Serial << "Done Reading data.\n";
-  Serial.write(httpContent,contentLength);
+  //Serial.write(httpContent,contentLength);
   Serial << "\nContent Length = " << contentLength << DASHES;
 }
 
