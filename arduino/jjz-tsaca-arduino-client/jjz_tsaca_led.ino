@@ -1,80 +1,63 @@
 /*
  * This module contains all LED-related functions.
  * 
+ * NB: 74HC595 stuff from CIRC-05
  */
  
 #include <Adafruit_WS2801.h>
 
 // LED leads connected to PWM pins for CC3000 Wifi: 3,4,5,9,10,11,12,13
-const int RED_LED_PIN = 6;  
-const int GREEN_LED_PIN = 7; 
-const int BLUE_LED_PIN = 8; 
+//Pin Definitions
+//The 74HC595 uses a serial communication 
+//link which has three pins
+int DATA_74HC595_PIN = 6;   // original: 6
+int CLOCK_74HC595_PIN = 7;  // original: 7
+int LATCH_74HC595_PIN = 8;  // original: 8
 
-// Current intensity level of the individual LEDs
-int redIntensity = 0;
-int greenIntensity = 0;
-int blueIntensity = 0;
-
-// Length of time we spend showing each color
-const int DISPLAY_TIME = 60; // In milliseconds
-
-/*
-void doLedLoop(){
-  Serial << "\ndoLedLoop()";
-  // Cycle color from red through to green
-  // (In this loop we move from 100% red, 0% green to 0% red, 100% green)
-  analogWrite(BLUE_LED_PIN, 255);
-  Serial << "\ndoLedLoop(): red/green";
-  for (greenIntensity = 0; greenIntensity <= 255; greenIntensity+=5) {
-        redIntensity = 255-greenIntensity;
-        analogWrite(GREEN_LED_PIN, greenIntensity);
-        analogWrite(RED_LED_PIN, redIntensity);
-        delay(DISPLAY_TIME);
-  }
-
-  // Cycle color from green through to blue
-  // (In this loop we move from 100% green, 0% blue to 0% green, 100% blue)  
-  Serial << "\ndoLedLoop(): green/blue";
-  analogWrite(RED_LED_PIN, 255);
-  for (blueIntensity = 0; blueIntensity <= 255; blueIntensity+=5) {
-        greenIntensity = 255-blueIntensity;
-        analogWrite(BLUE_LED_PIN, blueIntensity);
-        analogWrite(GREEN_LED_PIN, greenIntensity);
-        delay(DISPLAY_TIME);
-  }
-
-  // Cycle cycle from blue through to red
-  // (In this loop we move from 100% blue, 0% red to 0% blue, 100% red)    
-  analogWrite(GREEN_LED_PIN, 255);
-  Serial << "\ndoLedLoop(): blue/red";
-  for (redIntensity = 0; redIntensity <= 255; redIntensity+=5) {
-        blueIntensity = 255-redIntensity;
-        analogWrite(RED_LED_PIN, redIntensity);
-        analogWrite(BLUE_LED_PIN, blueIntensity);
-        delay(DISPLAY_TIME);
-  }
-
-}
-*/
+//Used for single LED manipulation
+int ledState = 0;
+const int ON = HIGH;
+const int OFF = LOW;
+                        
 
 void configureRGBOutputPins(void){
-  Serial << "\n NO-OP: 'configureRGBOutputPins' \n";
-//  Serial << "\n  Configure RGB pins ("<< RED_LED_PIN << ","<< GREEN_LED_PIN << ","<< BLUE_LED_PIN << ") as OUTPUT.\n";
-//  pinMode(RED_LED_PIN, OUTPUT);
-//  pinMode(GREEN_LED_PIN, OUTPUT);
-//  pinMode(BLUE_LED_PIN, OUTPUT);
+//  Serial << "\n NO-OP: 'configureRGBOutputPins' \n";
+  pinMode(DATA_74HC595_PIN, OUTPUT);
+  pinMode(CLOCK_74HC595_PIN, OUTPUT);  
+  pinMode(LATCH_74HC595_PIN, OUTPUT);  
+  for (int led = 0; led < 8; led++){
+    Serial << "\nInitialize LED " << led ;
+      changeLED(led,0) ; //0 = OFF
+  }
 }
 
 
+// DEPRECATED
 void setColorRGB (int r, int g, int b){
   Serial << "\n NO-OP: 'setColorRGB' \n";
-//  Serial << "\n  Set LED to RGB (" << r << ","<< g << ","<< b << ")  pins ("<< RED_LED_PIN << ","<< GREEN_LED_PIN << ","<< BLUE_LED_PIN << ")\n";
-//  redIntensity= 255 - r;
-//  analogWrite(RED_LED_PIN, redIntensity);
-//  greenIntensity=255 - g;
-//  analogWrite(GREEN_LED_PIN, greenIntensity);
-//  blueIntensity=255 - b;
-//  analogWrite(BLUE_LED_PIN, blueIntensity);  
-//  delay(500);
 }
 
+
+/*
+ * updateLEDs() - sends the LED states set in ledStates to the 74HC595
+ * sequence
+ */
+void updateLEDs(int value){
+  digitalWrite(LATCH_74HC595_PIN, LOW);     //Pulls the chips latch low
+  shiftOut(DATA_74HC595_PIN, CLOCK_74HC595_PIN, MSBFIRST, value); //Shifts out the 8 bits to the shift register
+  digitalWrite(LATCH_74HC595_PIN, HIGH);   //Pulls the latch high displaying the data
+}
+
+//These are used in the bitwise math that we use to change individual LEDs
+//For more details http://en.wikipedia.org/wiki/Bitwise_operation
+int bits[] = {B00000001, B00000010, B00000100, B00001000, B00010000, B00100000, B01000000, B10000000};
+int masks[] = {B11111110, B11111101, B11111011, B11110111, B11101111, B11011111, B10111111, B01111111};
+/*
+ * changeLED(int led, int state) - changes an individual LED 
+ * LEDs are 0 to 7 and state is either 0 - OFF or 1 - ON
+ */
+ void changeLED(int led, int state){
+   ledState = ledState & masks[led];  //clears ledState of the bit we are addressing
+   if(state == ON){ledState = ledState | bits[led];} //if the bit is on we will add it to ledState
+   updateLEDs(ledState);              //send the new LED state to the shift register
+ }
