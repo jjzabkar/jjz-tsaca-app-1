@@ -1,5 +1,5 @@
 /*
- * This module contains all business logic, setup(), and loop().
+ * This module contains setup() and loop().
  * 
  */
 
@@ -15,21 +15,21 @@ void setup(void)
 {
   Serial.begin(115200);
   configureRGBOutputPins();
-  setColorRGB(254,0,0); //red
+//  setColorRGB(254,0,0); //red
   initializeWifi();
-  setColorRGB(254,140,0); //orange
+//  setColorRGB(254,140,0); //orange
   setStaticIpAddress();
-  setColorRGB(255,200,0); // yellow
+//  setColorRGB(255,200,0); // yellow
 }
 
 
 void loop(void){
   unsigned long startLoopMillis = millis();
-  setColorRGB(0,254,0); // green
+//  setColorRGB(0,254,0); // green
   connectToWifiNetwork();
-  setColorRGB(255,200,0); // yellow
+//  setColorRGB(255,200,0); // yellow
   doWebClientTest();
-  setColorRGB(0,254,0); // green
+//  setColorRGB(0,254,0); // green
   disconnectFromWifiNetwork();
 //  delay(5000);
   unsigned long elapsedLoopMillis = millis() - startLoopMillis;

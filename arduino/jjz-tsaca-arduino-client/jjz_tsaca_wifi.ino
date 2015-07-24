@@ -25,12 +25,12 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 #define IDLE_TIMEOUT_MS  3000      // Amount of time to wait (in milliseconds) with no data received before closing the connection.
 #define WEBSITE      "jjztsacaapp1.cfapps.io" // What page to grab!
 #define WEBSITE_PORT 80
-#define WEBPAGE      "/arrivals/csv"
+//#define WEBPAGE      "/arrivals/csv"
+uint32_t ip = 0;
 //#define WEBSITE      "192.168.1.12"
 //#define WEBSITE_PORT   8080
-//#define WEBPAGE      "/arrivals/test"
+#define WEBPAGE      "/arrivals/test"
 #define DASHES       "\n----------------------------------------------\n"
-uint32_t ip = 0;
 
 //per: http://playground.arduino.cc/Main/StreamingOutput
 template<class T> inline Print &operator <<(Adafruit_CC3000_Client &obj, T arg) { obj.fastrprint(arg); return obj; }
@@ -38,7 +38,7 @@ template<class T> inline Print &operator <<(Adafruit_CC3000_Client &obj, T arg) 
 char httpContent[256]; // buffer array for data recieve over serial port
 int contentLength = 0; // MAX= 32,767 (2^15 -1 )
 
-
+//String nullTerminatedString;
 void connectToWebSite(void){
   /* Try connecting to the website.  Note: HTTP/1.1 protocol is used 
      to keep the server from closing the connection before all data is read.   */
@@ -60,24 +60,18 @@ void connectToWebSite(void){
   /* Read data until either the connection is closed, or the idle timeout is reached. */ 
   while (www.connected() && (millis() - lastRead < IDLE_TIMEOUT_MS)) {
     while (www.available()) {
-      char c = www.read();
-      if (contentLength < 512 ) {
-        httpContent[contentLength++] = c;
-        if ( c == '\n' ){
-          Serial.write(httpContent,contentLength);
-          contentLength = 0;
-          String s = String(httpContent);
-          Serial << "\n  s="<< s ;
-        }
-      }
+
+      //https://www.arduino.cc/en/Reference/StreamReadStringUntil
+      String str = www.readStringUntil('\n');
+      processHttpContentString(str);
       lastRead = millis();
     }
   }
   //httpContent[contentLength] = '\0'; // null-terminate string
   www.close();
-  Serial << "Done Reading data.\n";
+  Serial << "\nDone Reading data.\n";
   //Serial.write(httpContent,contentLength);
-  Serial << "\nContent Length = " << contentLength << DASHES;
+  //Serial << "\nContent Length = " << contentLength << DASHES;
 }
 
 
@@ -110,30 +104,30 @@ void disconnectFromWifiNetwork(void){
 
 void connectToWifiNetwork(void){
   char *ssid = WLAN_SSID;             /* Max 32 chars */
-  Serial << "\nAttempting to connect to " << ssid;
+  Serial << "\nAttempting to connect to " << ssid << "... ";
   unsigned long time1 = millis();
   if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
     Serial << "Failed!\n";
     while(1);
   }
-  Serial << "Request DHCP\n";
+//  Serial << "\nRequest DHCP";
   while (!cc3000.checkDHCP())
   {
     Serial << ".";
     delay(100); // ToDo: Insert a DHCP timeout!
   }  
-  Serial << "Connected! (" << ( millis() - time1 ) << "ms)";
+  Serial << " ... Connected! (" << ( millis() - time1 ) << "ms)\n";
 }
 
 
 void initializeWifi(void){
-  Serial << "\nInitialising the CC3000 ...\n";
+  Serial << "\nInitialising the CC3000 ... ";
   if (!cc3000.begin())
   {
     Serial << "\nUnable to initialise the CC3000! Check your wiring?\n";
     while(1);
   }
-  Serial << "\nInitialized the CC3000\n";
+  Serial << " ...done.\n";
 }
 
 

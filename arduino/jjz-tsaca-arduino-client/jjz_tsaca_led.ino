@@ -27,7 +27,7 @@ void configureRGBOutputPins(void){
   pinMode(LATCH_74HC595_PIN, OUTPUT);  
   for (int led = 0; led < 8; led++){
     Serial << "\nInitialize LED " << led ;
-      changeLED(led,0) ; //0 = OFF
+    changeLED(led,0) ; //0 = OFF
   }
 }
 
