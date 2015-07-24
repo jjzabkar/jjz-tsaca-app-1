@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import com.jjz.tsaca.domain.Station;
 @Service
 @Profile({ "dev" })
 public class DevProfileTestDataPopulationService {
+
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Inject
 	private OneBusAwayApiRouteService routeService;
@@ -30,7 +34,7 @@ public class DevProfileTestDataPopulationService {
 				"29_413", // 413
 				"29_435", // 435
 				"40_SNDR_N" //
-				};
+		};
 		for (String routeId : routeIds) {
 			List<Route> existingRoutes = routeService.findAll();
 			boolean found = false;
@@ -42,7 +46,11 @@ public class DevProfileTestDataPopulationService {
 			if (!found) {
 				Route r = new Route();
 				r.setRouteId(routeId);
-				routeService.save(r);
+				try {
+					routeService.save(r);
+				} catch (Exception ignore) {
+					log.warn("Failed to save route routeId='" + routeId + "': " + ignore.getMessage(), ignore);
+				}
 			}
 		}
 		String[] stopIds = { //
@@ -50,14 +58,18 @@ public class DevProfileTestDataPopulationService {
 				"1_75730", // Shoreline P&R
 				"29_2765", // Mountlake Terrace P&R
 				"40_S_ED" // Edmonds Station
-				};
+		};
 		for (String stopId : stopIds) {
 			if (!stopService.findAllMap().containsKey(stopId)) {
 				Station s = new Station();
 				s.setStopId(stopId);
 				s.setOutputSlots(8);
 				s.setTravelTimeFromHomeToStationInSeconds(7L * 60L);
-				stopService.save(s);
+				try {
+					stopService.save(s);
+				} catch (Exception ignore) {
+					log.warn("Failed to save station with stopId='" + stopId + "': " + ignore.getMessage(), ignore);
+				}
 			}
 		}
 
