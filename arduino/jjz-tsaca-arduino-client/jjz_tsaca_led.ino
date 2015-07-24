@@ -58,21 +58,23 @@ void doLedLoop(){
 */
 
 void configureRGBOutputPins(void){
-  Serial << "\n  Configure RGB pins ("<< RED_LED_PIN << ","<< GREEN_LED_PIN << ","<< BLUE_LED_PIN << ") as OUTPUT.\n";
-  pinMode(RED_LED_PIN, OUTPUT);
-  pinMode(GREEN_LED_PIN, OUTPUT);
-  pinMode(BLUE_LED_PIN, OUTPUT);
+  Serial << "\n NO-OP: 'configureRGBOutputPins' \n";
+//  Serial << "\n  Configure RGB pins ("<< RED_LED_PIN << ","<< GREEN_LED_PIN << ","<< BLUE_LED_PIN << ") as OUTPUT.\n";
+//  pinMode(RED_LED_PIN, OUTPUT);
+//  pinMode(GREEN_LED_PIN, OUTPUT);
+//  pinMode(BLUE_LED_PIN, OUTPUT);
 }
 
 
 void setColorRGB (int r, int g, int b){
-  Serial << "\n  Set LED to RGB (" << r << ","<< g << ","<< b << ")  pins ("<< RED_LED_PIN << ","<< GREEN_LED_PIN << ","<< BLUE_LED_PIN << ")\n";
-  redIntensity= 255 - r;
-  analogWrite(RED_LED_PIN, redIntensity);
-  greenIntensity=255 - g;
-  analogWrite(GREEN_LED_PIN, greenIntensity);
-  blueIntensity=255 - b;
-  analogWrite(BLUE_LED_PIN, blueIntensity);  
-  delay(500);
+  Serial << "\n NO-OP: 'setColorRGB' \n";
+//  Serial << "\n  Set LED to RGB (" << r << ","<< g << ","<< b << ")  pins ("<< RED_LED_PIN << ","<< GREEN_LED_PIN << ","<< BLUE_LED_PIN << ")\n";
+//  redIntensity= 255 - r;
+//  analogWrite(RED_LED_PIN, redIntensity);
+//  greenIntensity=255 - g;
+//  analogWrite(GREEN_LED_PIN, greenIntensity);
+//  blueIntensity=255 - b;
+//  analogWrite(BLUE_LED_PIN, blueIntensity);  
+//  delay(500);
 }
 
