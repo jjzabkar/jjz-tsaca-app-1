@@ -67,11 +67,8 @@ void connectToWebSite(void){
       lastRead = millis();
     }
   }
-  //httpContent[contentLength] = '\0'; // null-terminate string
   www.close();
-  Serial << "\nDone Reading data.\n";
-  //Serial.write(httpContent,contentLength);
-  //Serial << "\nContent Length = " << contentLength << DASHES;
+  Serial << "\nDone Reading data." << DASHES;
 }
 
 
