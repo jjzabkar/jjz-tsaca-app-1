@@ -13,22 +13,26 @@ template<class T> inline Print &operator <<(Print &obj, T arg) { obj.print(arg);
 
 void setup(void)
 {
+  unsigned long startLoopMillis = millis();
   Serial.begin(115200);
   configureRGBOutputPins();
   setMultiLed74HC595(1,"purple");
   setMultiLed74HC595(2,"purple");
   initializeWifi();
   setStaticIpAddress();
+  connectToWifiNetwork();
+  unsigned long elapsedLoopMillis = millis() - startLoopMillis;
+  Serial << "\n*** setup() took " << elapsedLoopMillis << "ms ****\r\n"; 
 }
 
 
 void loop(void){
+  loopCount++;
   unsigned long startLoopMillis = millis();
-  connectToWifiNetwork();
+  //  connectToWifiNetwork();
   doWebClientTest();
-  disconnectFromWifiNetwork();
+  //  disconnectFromWifiNetwork();
   unsigned long elapsedLoopMillis = millis() - startLoopMillis;
-  unsigned long sleepTime = min(max(MIN_LOOP_TIME_MILLIS, DEFAULT_LOOP_TIME_MILLIS - elapsedLoopMillis), DEFAULT_LOOP_TIME_MILLIS);
-  Serial << "*** Sleep for " << sleepTime << "ms ****\r\n"; 
+  Serial << "*** loop(" << loopCount << ") took " << elapsedLoopMillis << "ms ****\r\n"; 
 }
 

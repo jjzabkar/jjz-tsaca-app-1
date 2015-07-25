@@ -35,10 +35,7 @@ uint32_t ip = 0;
 //per: http://playground.arduino.cc/Main/StreamingOutput
 template<class T> inline Print &operator <<(Adafruit_CC3000_Client &obj, T arg) { obj.fastrprint(arg); return obj; }
 
-char httpContent[256]; // buffer array for data recieve over serial port
-int contentLength = 0; // MAX= 32,767 (2^15 -1 )
 
-//String nullTerminatedString;
 void connectToWebSite(void){
   /* Try connecting to the website.  Note: HTTP/1.1 protocol is used 
      to keep the server from closing the connection before all data is read.   */
@@ -52,17 +49,14 @@ void connectToWebSite(void){
     Serial << "Connection failed\n";
     return;
   }
-  Serial << DASHES;
-
-  contentLength = 0; // reset!
-  Serial << "Reading data...\n";
+  Serial << DASHES << "Reading data...\n";
   unsigned long lastRead = millis();
   /* Read data until either the connection is closed, or the idle timeout is reached. */ 
   while (www.connected() && (millis() - lastRead < IDLE_TIMEOUT_MS)) {
     while (www.available()) {
-
       //https://www.arduino.cc/en/Reference/StreamReadStringUntil
       String str = www.readStringUntil('\n');
+      //TODO: hold off on actioning LEDs until stream read complete
       processHttpContentString(str);
       lastRead = millis();
     }
@@ -92,10 +86,11 @@ void doWebClientTest(void){
 
 
 void disconnectFromWifiNetwork(void){
-  Serial << "\nDisconnecting\n";
+  Serial << "\nDisconnecting... ";
   /* You need to make sure to clean up after yourself or the CC3000 can freak out */
   /* the next time your try to connect ... */
   cc3000.disconnect();
+  Serial << " ...Disconnected.\n";
 }
 
 
@@ -107,7 +102,7 @@ void connectToWifiNetwork(void){
     Serial << "Failed!\n";
     while(1);
   }
-//  Serial << "\nRequest DHCP";
+  Serial << " ... Requesting DHCP... ";
   while (!cc3000.checkDHCP())
   {
     Serial << ".";
