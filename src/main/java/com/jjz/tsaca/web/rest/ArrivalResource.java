@@ -51,7 +51,8 @@ public class ArrivalResource {
 	@ResponseBody
 	public String getTest() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("STATION,abc_123,");
+		sb.append(OneBusAwayApiArrivalsAndDeparturesService.CSV_LINE_CONSTANT_PREFIX_STATION);
+		sb.append(",abc_123,");
 		sb.append(colors[colorIndex % colors.length]);
 		sb.append(",");
 		colorIndex++;

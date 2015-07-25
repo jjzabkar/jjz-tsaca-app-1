@@ -25,11 +25,11 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 #define IDLE_TIMEOUT_MS  3000      // Amount of time to wait (in milliseconds) with no data received before closing the connection.
 #define WEBSITE      "jjztsacaapp1.cfapps.io" // What page to grab!
 #define WEBSITE_PORT 80
-//#define WEBPAGE      "/arrivals/csv"
+#define WEBPAGE      "/arrivals/csv"
 uint32_t ip = 0;
 //#define WEBSITE      "192.168.1.12"
 //#define WEBSITE_PORT   8080
-#define WEBPAGE      "/arrivals/test"
+//#define WEBPAGE      "/arrivals/test"
 #define DASHES       "\n----------------------------------------------\n"
 
 //per: http://playground.arduino.cc/Main/StreamingOutput

@@ -32,6 +32,8 @@ import com.jjz.tsaca.domain.Station;
 @ConfigurationProperties(prefix = "onebusaway.arrivalsAndDeparturesService", ignoreUnknownFields = false)
 public class OneBusAwayApiArrivalsAndDeparturesService {
 
+	public static final String CSV_LINE_CONSTANT_PREFIX_STATION = "STATION";
+
 	private static final String COMMA = ",";
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -134,7 +136,10 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 			final Integer outputSlots = ObjectUtils.defaultIfNull(s.getOutputSlots(), new Integer(4));
 			final String stopId = s.getStopId();
 			if (sbOutput != null) {
+				sbOutput.append(CSV_LINE_CONSTANT_PREFIX_STATION);
+				sbOutput.append(COMMA);
 				sbOutput.append(stopId);
+				sbOutput.append(COMMA);
 			} else if (arrivalOutput != null) {
 				arrivalOutput.addStation(s);
 				s.setArrivals(new LinkedList<ArrivalDeparture>());
@@ -150,9 +155,6 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 
 			for (int i = 0; i < outputSlots; i++) {
 				if (i < aadListForStation.size()) {
-					if (sbOutput != null) {
-						sbOutput.append(COMMA);
-					}
 					final ArrivalDeparture aad = aadListForStation.get(i);
 					final String color = aad.getColor();
 					final Date myEstimatedBoardableTime = aad.getMyEstimatedBoardableTime();
@@ -161,6 +163,7 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 					log.debug("\tStop  Page: {}", obaApiStationService.getUrlForStopId(stopId));
 					if (sbOutput != null) {
 						sbOutput.append(color);
+						sbOutput.append(COMMA);
 					} else if (arrivalOutput != null) {
 						s.getArrivals().add(aad);
 					}
