@@ -169,7 +169,7 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 					}
 				} else {
 					if (sbOutput != null) {
-						sbOutput.append(COMMA).append("off");
+						sbOutput.append("off").append(COMMA);
 					} else if (arrivalOutput != null) {
 						ArrivalDeparture newAad = new ArrivalDeparture();
 						newAad.setColor("off");
