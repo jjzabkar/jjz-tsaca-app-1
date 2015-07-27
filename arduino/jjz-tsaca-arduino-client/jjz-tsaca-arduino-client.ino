@@ -15,11 +15,12 @@ void setup(void)
 {
   unsigned long startLoopMillis = millis();
   Serial.begin(115200);
-  configureRGBOutputPins();
-  setMultiLed74HC595(1,"purple");
-  setMultiLed74HC595(2,"purple");
+  ledSetup();
+  setOnePixel(0, 255, 0, 0 );  //red
   initializeWifi();
+  setOnePixel(0, 218, 218, 0 ); //yellow
   setStaticIpAddress();
+  setOnePixel(0, 255, 0, 255 ); //purple
   connectToWifiNetwork();
   unsigned long elapsedLoopMillis = millis() - startLoopMillis;
   Serial << "\n*** setup() took " << elapsedLoopMillis << "ms ****\r\n"; 
@@ -30,7 +31,9 @@ void loop(void){
   loopCount++;
   unsigned long startLoopMillis = millis();
   //  connectToWifiNetwork();
+  setOnePixel(0, 0, 255, 0 ); //green
   doWebClientTest();
+  ledLoop();
   //  disconnectFromWifiNetwork();
   unsigned long elapsedLoopMillis = millis() - startLoopMillis;
   Serial << "*** loop(" << loopCount << ") took " << elapsedLoopMillis << "ms ****\r\n"; 
