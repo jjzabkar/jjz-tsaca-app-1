@@ -6,14 +6,14 @@ import fr.dudie.onebusaway.model.ArrivalAndDeparture;
 
 public class ArrivalDeparture extends ArrivalAndDeparture {
 
-	private String color;
+	private SortableColor color;
 	private Date myEstimatedBoardableTime;
 
-	public String getColor() {
+	public SortableColor getColor() {
 		return color;
 	}
 
-	public void setColor(String color) {
+	public void setColor(SortableColor color) {
 		this.color = color;
 	}
 

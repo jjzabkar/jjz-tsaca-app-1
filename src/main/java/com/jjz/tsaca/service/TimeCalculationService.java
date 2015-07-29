@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.jjz.tsaca.domain.ArrivalDeparture;
+import com.jjz.tsaca.domain.SortableColor;
 import com.jjz.tsaca.domain.Station;
 
 @Service
@@ -17,39 +18,39 @@ public class TimeCalculationService {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	// Keys kept in insertion order
-	private LinkedHashMap<Long, String> colorMap;
+	private LinkedHashMap<Long, SortableColor> colorMap;
 
 	public TimeCalculationService() {
 		colorMap = new LinkedHashMap<>();
 		// AFTT= accounting for travel time
 
 		// there will be an arrival in 7 minutes or less, AFTT.
-		colorMap.put((60L * 7L), "green");
+		colorMap.put((60L * 7L), SortableColor.GREEN);
 
 		// there will be an arrival in 7-to-15 minutes, AFTT.
-		colorMap.put((60L * 15L), "yellow");
+		colorMap.put((60L * 15L), SortableColor.YELLOW);
 
 		// there will be an arrival in 15-to-30-minutes, AFTT.
-		colorMap.put((60L * 30L), "red");
+		colorMap.put((60L * 30L), SortableColor.RED);
 
 		// there will be an arrival in 30+ minutes, AFTT.
-		colorMap.put(Long.MAX_VALUE, "off");
+		colorMap.put(Long.MAX_VALUE, SortableColor.OFF);
 	}
 
-	public String getColor(ArrivalDeparture aad, Station s) {
+	public SortableColor getColor(ArrivalDeparture aad, Station s) {
 		final long diffInSeconds = getDiffInSeconds(aad, s);
 		log.trace("\t\t diffInSeconds={}", (diffInSeconds));
 		if (diffInSeconds < 0L) {
-			return "off";
+			return SortableColor.OFF;
 		}
-		for (Entry<Long, String> entry : colorMap.entrySet()) {
+		for (Entry<Long, SortableColor> entry : colorMap.entrySet()) {
 			Long l = entry.getKey();
 			if (diffInSeconds <= l) {
 				return entry.getValue();
 			}
 		}
 
-		return "purple";
+		return SortableColor.PURPLE;
 	}
 
 	/**
