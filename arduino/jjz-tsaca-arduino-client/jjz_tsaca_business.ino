@@ -3,21 +3,36 @@
  * 
  */
 
+/*
+ * 
+ * STATION,000000,000000,000000,000000,000000,000000,000000,000000,ff00ff,00ff00,00ff00,00ff00,00ff00,dada00,ff0000,ff00ff,dada00,ff0000,ff00ff,00ff00,ff0000,000000,000000,000000,000000,
+ */
+
+
+int commaIndex = -1;
+int nextCommaIndex = -1;
+String hex ;
+int fieldCounter = 0;
+
 void processHttpContentString(String s){
-//    Serial << "\n  s='" << s << "'";
   if (s.startsWith("STATION")){
     Serial << "\n  STATION='" << s << "'";
-    int comma1Index = s.indexOf(',');
-    //  Search for the next comma just after the first
-    int comma2Index = s.indexOf(',', comma1Index + 1 );
-    int comma3Index = s.indexOf(',', comma2Index + 1 );
-    int comma4Index = s.indexOf(',', comma3Index + 1 );
-    // 1st field (STATION) ignore
-    // 2nd field (stationId) ignore
-    // get 3rd field LED-1
-    setMultiLed74HC595(1, s.substring(comma2Index + 1,comma3Index) );
-    // get 4rd field LED-2
-    setMultiLed74HC595(2, s.substring(comma3Index + 1,comma4Index) );
+    commaIndex = s.indexOf(',');
+    nextCommaIndex = -1;
+    fieldCounter = -1;
+    while(commaIndex > 0 ){
+      Serial << "\n  nextCommaIndex="<< commaIndex << "  fieldCounter=" << fieldCounter;
+      nextCommaIndex = s.indexOf(',', nextCommaIndex + 1);
+      if( nextCommaIndex > commaIndex ){
+        hex = s.substring(commaIndex + 1,nextCommaIndex);
+        Serial << "\n  hex=" << hex;
+      } else{
+        Serial << "\n  commaIndex <= nextCommaIndex (" << commaIndex << "<=" << nextCommaIndex << ")";
+      }
+      commaIndex = nextCommaIndex;
+      fieldCounter++;
+    }
+
   }
 }
 

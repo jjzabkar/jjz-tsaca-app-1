@@ -16,6 +16,7 @@ void setup(void)
   unsigned long startLoopMillis = millis();
   Serial.begin(115200);
   ledSetup();
+  /*
   setOnePixel(0, 255, 0, 0 );  //red
   initializeWifi();
   setOnePixel(0, 218, 218, 0 ); //yellow
@@ -24,10 +25,17 @@ void setup(void)
   connectToWifiNetwork();
   unsigned long elapsedLoopMillis = millis() - startLoopMillis;
   Serial << "\n*** setup() took " << elapsedLoopMillis << "ms ****\r\n"; 
+  */
+
+  String s1 = "STATION,000000,000000,000000,000000,000000,000000,000000,000000,ff00ff,00ff00,00ff00,00ff00,00ff00,dada00,ff0000,ff00ff,dada00,ff0000,ff00ff,00ff00,ff0000,000000,000000,000000,000000,";
+  processHttpContentString(s1);
 }
 
 
 void loop(void){
+  delay(30000);
+  
+  /*
   loopCount++;
   unsigned long startLoopMillis = millis();
   //  connectToWifiNetwork();
@@ -37,5 +45,6 @@ void loop(void){
   //  disconnectFromWifiNetwork();
   unsigned long elapsedLoopMillis = millis() - startLoopMillis;
   Serial << "*** loop(" << loopCount << ") took " << elapsedLoopMillis << "ms ****\r\n"; 
+  */
 }
 

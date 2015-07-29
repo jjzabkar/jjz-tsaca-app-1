@@ -1,5 +1,6 @@
 package com.jjz.tsaca.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
@@ -118,35 +120,66 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 		return arrivalsMap;
 	}
 
+	/*
+	 * Array: PREFIX,led0,led1,led2,...,led24
+	 * 
+	 */
 	public String fetchArduinoCsvData() {
-		StringBuilder output = new StringBuilder();
-		buildFetchedData(null, output);
-		return output.toString();
+		final Arrival arrival = getArrival();
+		StringBuilder sbOutput = new StringBuilder();
+		sbOutput.append(CSV_LINE_CONSTANT_PREFIX_STATION);
+		sbOutput.append(COMMA);
+		
+		List<SortableColor> outputColors = new ArrayList<>(25);
+		for (int i = 0; i < 25; i++) {
+			outputColors.add(SortableColor.OFF);
+		}
+
+		Station station;
+		Map<Integer, Integer> stationIndexOffsets = new TreeMap<>();
+		stationIndexOffsets.put(0, 9);
+		stationIndexOffsets.put(1, 16);
+		stationIndexOffsets.put(2, 19);
+
+		for (int sindex = 0; sindex < 3; sindex++) {
+			station = arrival.getStations().get(sindex);
+			int stationIndexOffset = (int) stationIndexOffsets.get(sindex);
+			for (int i = 0; i < station.getOutputSlots(); i++) {
+				int i2 = i + stationIndexOffset;
+				SortableColor c = station.getArrivals().get(i).getColor();
+				if (i2 < (outputColors.size() - 1)) {
+					outputColors.set(i2, c);
+					log.debug("   set outputColors[{}]={}", i2, c);
+				} else {
+					log.debug("NO set outputColors[{}]={}", i2, c);
+
+				}
+			}
+		}
+
+		// set spacers
+		outputColors.set(8, SortableColor.PURPLE);
+		outputColors.set(15, SortableColor.PURPLE);
+		outputColors.set(18, SortableColor.PURPLE);
+
+		for (SortableColor sc : outputColors) {
+			sbOutput.append(sc.toHex()).append(COMMA);
+		}
+		sbOutput.append("\n");
+		return sbOutput.toString();
 	}
 
 	public Arrival getArrival() {
 		Arrival result = new Arrival();
-		buildFetchedData(result, null);
-		return result;
-	}
-
-	private void buildFetchedData(final Arrival arrivalOutput, final StringBuilder sbOutput) {
 		List<Station> stations = obaApiStationService.findAll();
 		for (Station s : stations) {
 			final Integer outputSlots = ObjectUtils.defaultIfNull(s.getOutputSlots(), new Integer(4));
 			final String stopId = s.getStopId();
-			if (sbOutput != null) {
-				sbOutput.append(CSV_LINE_CONSTANT_PREFIX_STATION);
-				sbOutput.append(COMMA);
-				sbOutput.append(stopId);
-				sbOutput.append(COMMA);
-			} else if (arrivalOutput != null) {
-				arrivalOutput.addStation(s);
-				s.setArrivals(new LinkedList<ArrivalDeparture>());
-			}
+			result.addStation(s);
+			s.setArrivals(new LinkedList<ArrivalDeparture>());
 			List<ArrivalDeparture> aadListForStation = this.arrivalsPerStation.get(stopId);
 			for (ArrivalDeparture aad : aadListForStation) {
-				final String color = timeCalculationService.getColor(aad, s);
+				final SortableColor color = timeCalculationService.getColor(aad, s);
 				final Date myEstimatedBoardableTime = timeCalculationService.getEstimatedBoardableTime(aad, s);
 				aad.setColor(color);
 				aad.setMyEstimatedBoardableTime(myEstimatedBoardableTime);
@@ -156,39 +189,28 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 			for (int i = 0; i < outputSlots; i++) {
 				if (i < aadListForStation.size()) {
 					final ArrivalDeparture aad = aadListForStation.get(i);
-					final String color = aad.getColor();
+					final SortableColor color = aad.getColor();
 					final Date myEstimatedBoardableTime = aad.getMyEstimatedBoardableTime();
 					log.debug("color={}\t myEstimatedBoardableTime={}\t routeId={}\t stopId={}", color, myEstimatedBoardableTime,
 							aad.getRouteId(), s.getStopId());
 					log.debug("\tStop  Page: {}", obaApiStationService.getUrlForStopId(stopId));
-					if (sbOutput != null) {
-						sbOutput.append(color);
-						sbOutput.append(COMMA);
-					} else if (arrivalOutput != null) {
-						s.getArrivals().add(aad);
-					}
+					s.getArrivals().add(aad);
 				} else {
-					if (sbOutput != null) {
-						sbOutput.append("off").append(COMMA);
-					} else if (arrivalOutput != null) {
-						ArrivalDeparture newAad = new ArrivalDeparture();
-						newAad.setColor("off");
-						s.getArrivals().add(newAad);
-					}
+					ArrivalDeparture newAad = new ArrivalDeparture();
+					newAad.setColor(SortableColor.OFF);
+					s.getArrivals().add(newAad);
 				}
 			}
-			if (sbOutput != null) {
-				sbOutput.append("\n");
-			}
 		}
+		return result;
 	}
 
 	public static Comparator<ArrivalDeparture> sortByColorThenBoardableTimeComparator = new Comparator<ArrivalDeparture>() {
 		@Override
 		public int compare(ArrivalDeparture o1, ArrivalDeparture o2) {
 			return ComparisonChain.start() //
-					.compare(SortableColor.valueOf(StringUtils.upperCase(o1.getColor())), //
-							SortableColor.valueOf(StringUtils.upperCase(o2.getColor()))) //
+					.compare(SortableColor.valueOf(StringUtils.upperCase(o1.getColor().toString())), //
+							SortableColor.valueOf(StringUtils.upperCase(o2.getColor().toString()))) //
 					.compare(o1.getMyEstimatedBoardableTime(), o2.getMyEstimatedBoardableTime(), Ordering.natural().nullsLast())//
 					.result();
 		}
