@@ -27,15 +27,16 @@ void setup(void)
 //  Serial << "\n*** setup() took " << elapsedLoopMillis << "ms ****\r\n"; 
 }
 
-
+unsigned long elapsedLoopMillis = -1;
 void loop(void){  
   loopCount++;
   unsigned long startLoopMillis = millis();
   //  connectToWifiNetwork();
-  doWebClientTest();
+  setOnePixel(0, 200, 170, 0 ); //yellow3; reset to green within connectToWebSite()
+  doWebClientTest(loopCount, elapsedLoopMillis);
   //  disconnectFromWifiNetwork();
-  unsigned long elapsedLoopMillis = millis() - startLoopMillis;
-  Serial << "\n*** loop(" << loopCount << ") took " << elapsedLoopMillis << "ms ****\n"; 
+  elapsedLoopMillis = millis() - startLoopMillis;
+  Serial << "\n*** loop(" << loopCount << ") took " << elapsedLoopMillis << "ms ****"; 
 }
 
 

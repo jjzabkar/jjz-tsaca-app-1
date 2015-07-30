@@ -27,6 +27,8 @@ Adafruit_CC3000_Client www;
 #define WEBSITE      "jjztsacaapp1.cfapps.io" // What page to grab!
 #define WEBSITE_PORT 80
 #define WEBPAGE      "/arrivals/csv"
+#define NEWLINE      '\n'
+#define STATION_PFX  "STATION"
 uint32_t ip = 0;
 //#define WEBSITE      "192.168.1.12"
 //#define WEBSITE_PORT   8080
@@ -41,15 +43,15 @@ unsigned int contentLength = 0; // MAX= 32,767 (2^15 -1 )
 unsigned long lastRead;
 
 
-void connectToWebSite(void){
+void connectToWebSite(unsigned long loopCounter, unsigned long lastRequestMillis){
   /* Try connecting to the website.  Note: HTTP/1.1 protocol is used 
      to keep the server from closing the connection before all data is read.   */
 //  Serial << DASHES << "Connecting...";
-  setOnePixel(0, 200, 170, 0 ); //yellow3
   www = cc3000.connectTCP(ip, WEBSITE_PORT);
 //  Serial << "GET http://"  << WEBSITE << WEBPAGE << "\n";
   if (www.connected()) {
 //    Serial << " ...Connected.\n";
+//    www << "GET " << WEBPAGE << " HTTP/1.1\r\n" << "Host: " << WEBSITE << "\r\n\r\n";
     www << "GET " << WEBPAGE << " HTTP/1.1\r\n" << "Host: " << WEBSITE << "\r\n\r\n";
     www.println();
   } else {
@@ -64,11 +66,13 @@ void connectToWebSite(void){
   while (www.connected() && (millis() - lastRead < IDLE_TIMEOUT_MS)) {
     while (www.available()) {
       char c = www.read();
-      if(c == '\n'){
+      if(c == NEWLINE){
         String s;
         s = String(httpContent);
-        if (s.startsWith("STATION")){
+        if (s.startsWith(STATION_PFX)){
           processHttpContentString(s);
+          // pre-emptively close the stream to see if we can beat 10500ms (falls to ~680ms)
+          www.close();
         }
         // reset httpContent to null char
         for(int j = 0; j < contentLength; j++){
@@ -86,8 +90,8 @@ void connectToWebSite(void){
 }
 
 
-void doWebClientTest(void){
-  if ((loopCount % 20) == 0){
+void doWebClientTest(unsigned long loopCounter, unsigned long lastRequestMillis){
+  if ((loopCounter % 20) == 0){
     ip = 0;
 //    Serial << "Try looking up the website's IP address by Host Name\n";
   }
@@ -100,7 +104,7 @@ void doWebClientTest(void){
   }
   //  cc3000.printIPdotsRev(ip);
 
-  connectToWebSite();
+  connectToWebSite(loopCounter, lastRequestMillis);
 }
 
 
