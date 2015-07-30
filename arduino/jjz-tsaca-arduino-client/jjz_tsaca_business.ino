@@ -1,38 +1,33 @@
 /*
  * This module contains all business logic.
  * 
- */
-
-/*
- * 
+ * Example CSV response to parse:
  * STATION,000000,000000,000000,000000,000000,000000,000000,000000,ff00ff,00ff00,00ff00,00ff00,00ff00,dada00,ff0000,ff00ff,dada00,ff0000,ff00ff,00ff00,ff0000,000000,000000,000000,000000,
  */
 
-
+#define STATION "STATION"
+#define COMMA ","
 int commaIndex = -1;
 int nextCommaIndex = -1;
-String hex ;
+String hexstring ;
 int fieldCounter = 0;
 
 void processHttpContentString(String s){
-  if (s.startsWith("STATION")){
-    Serial << "\n  STATION='" << s << "'";
-    commaIndex = s.indexOf(',');
+  if (s.startsWith(STATION)){
+    commaIndex = s.indexOf(COMMA);
     nextCommaIndex = -1;
     fieldCounter = -1;
     while(commaIndex > 0 ){
-      Serial << "\n  nextCommaIndex="<< commaIndex << "  fieldCounter=" << fieldCounter;
-      nextCommaIndex = s.indexOf(',', nextCommaIndex + 1);
-      if( nextCommaIndex > commaIndex ){
-        hex = s.substring(commaIndex + 1,nextCommaIndex);
-        Serial << "\n  hex=" << hex;
-      } else{
-        Serial << "\n  commaIndex <= nextCommaIndex (" << commaIndex << "<=" << nextCommaIndex << ")";
+      nextCommaIndex = s.indexOf(COMMA, nextCommaIndex + 1);
+      if(fieldCounter > 7){
+        if( nextCommaIndex > commaIndex ){
+          hexstring = s.substring(commaIndex + 1,nextCommaIndex);
+          setOnePixelNoShowHexString(fieldCounter, hexstring);
+        }
       }
       commaIndex = nextCommaIndex;
       fieldCounter++;
     }
-
+    showPixels();
   }
 }
-
