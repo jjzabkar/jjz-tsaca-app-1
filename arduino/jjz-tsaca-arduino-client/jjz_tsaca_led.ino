@@ -11,8 +11,6 @@
  #include <avr/power.h>
 #endif
 
-//uint8_t dataPin  = 2;    // Yellow wire on Adafruit Pixels
-//uint8_t clockPin = 3;    // Green wire on Adafruit Pixels
 uint8_t dataPin  = 6;    // Yellow wire on Adafruit Pixels
 uint8_t clockPin = 7;    // Green wire on Adafruit Pixels
 
@@ -67,7 +65,6 @@ void setOnePixelNoShowHexString(int pixel, String hexstring){
   rr = numberr >> 16;
   gg = numberr >> 8 & 0xFF;
   bb = numberr & 0xFF;
-  //Serial << "\n pixel=" << pixel << "\t hexstring=" << hexstring << "\t rr,gg,bb=" << rr << "," << gg << "," << bb << "\t numberr=" << numberr; 
   strip.setPixelColor(pixel, Color( rr, gg, bb) );
 }
 

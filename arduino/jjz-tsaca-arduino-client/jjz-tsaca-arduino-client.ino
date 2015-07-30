@@ -14,7 +14,7 @@ template<class T> inline Print &operator <<(Print &obj, T arg) { obj.print(arg);
 void setup(void)
 {
 //  unsigned long startLoopMillis = millis();
-  Serial.begin(115200);
+//  Serial.begin(115200);
   ledSetup();
   setOnePixel(0, 255, 0, 0 );  //red
   initializeWifi();
@@ -36,7 +36,7 @@ void loop(void){
   doWebClientTest(loopCount, elapsedLoopMillis);
   //  disconnectFromWifiNetwork();
   elapsedLoopMillis = millis() - startLoopMillis;
-  Serial << "\n*** loop(" << loopCount << ") took " << elapsedLoopMillis << "ms ****"; 
+//  Serial << "\n*** loop(" << loopCount << ") took " << elapsedLoopMillis << "ms ****"; 
 }
 
 
