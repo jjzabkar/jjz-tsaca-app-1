@@ -3,8 +3,8 @@
  * 
  */
 
-//const unsigned long DEFAULT_LOOP_TIME_MILLIS = 60000;
-//const unsigned long MIN_LOOP_TIME_MILLIS = 5000;
+const unsigned long DEFAULT_LOOP_TIME_MILLIS = 29500;
+const unsigned long MIN_LOOP_TIME_MILLIS = 5000;
 unsigned long loopCount = 0;
 
 //per: http://playground.arduino.cc/Main/StreamingOutput
@@ -36,6 +36,8 @@ void loop(void){
   doWebClientTest(loopCount, elapsedLoopMillis);
   //  disconnectFromWifiNetwork();
   elapsedLoopMillis = millis() - startLoopMillis;
+  unsigned long sleepTime = min(max(MIN_LOOP_TIME_MILLIS, DEFAULT_LOOP_TIME_MILLIS - elapsedLoopMillis), DEFAULT_LOOP_TIME_MILLIS);
+  delay(sleepTime);
 //  Serial << "\n*** loop(" << loopCount << ") took " << elapsedLoopMillis << "ms ****"; 
 }
 
