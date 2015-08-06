@@ -16,9 +16,9 @@ void setup(void)
 //  unsigned long startLoopMillis = millis();
   ledSetup();
   // BEGIN facilitate LED parse testing
-  Serial.begin(115200);
-  processHttpContentString("STATION,000000,000000,000000,000000,000000,ff00ff,0000ff,00ff00,ff0000,000000,000000,000000,000000,ff00ff,0000ff,000000,000000,ff00ff,0000ff,daca00,ff0000,000000,000000,000000,000000,");
-  delay(600000);
+//  Serial.begin(115200);
+//  processHttpContentString("STATION,000000,000000,000000,000000,000000,ff00ff,0000ff,00ff00,ff0000,000000,000000,000000,000000,ff00ff,0000ff,000000,000000,ff00ff,0000ff,daca00,ff0000,000000,000000,000000,000000,");
+//  delay(600000);
   // END facilitate LED parse testing
     
   setOnePixel(0, 255, 0, 0 );  //red

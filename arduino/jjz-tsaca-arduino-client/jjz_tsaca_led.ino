@@ -66,7 +66,7 @@ void setOnePixelNoShowHexString(int pixel, String hexstring){
   gg = numberr >> 8 & 0xFF;
   bb = numberr & 0xFF;
 
- Serial << "\nset pixel " << pixel << " to " << hexstring << "  " << numberr;
+// Serial << "\nset pixel " << pixel << " to " << hexstring << "  " << numberr;
   
   strip.setPixelColor(pixel, Color( rr, gg, bb) );
 }
