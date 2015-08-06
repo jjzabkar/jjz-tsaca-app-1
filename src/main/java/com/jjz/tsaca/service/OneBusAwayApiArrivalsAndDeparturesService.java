@@ -137,8 +137,8 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 
 		Station station;
 		Map<Integer, Integer> stationIndexOffsets = new TreeMap<>();
-		stationIndexOffsets.put(0, 9);
-		stationIndexOffsets.put(1, 16);
+		stationIndexOffsets.put(0, 7);
+		stationIndexOffsets.put(1, 15);
 		stationIndexOffsets.put(2, 19);
 
 		for (int sindex = 0; sindex < 3; sindex++) {
@@ -158,9 +158,14 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 		}
 
 		// set spacers
-		outputColors.set(8, SortableColor.PURPLE);
-		outputColors.set(15, SortableColor.PURPLE);
-		outputColors.set(18, SortableColor.PURPLE);
+		outputColors.set(5, SortableColor.PURPLE);
+		outputColors.set(13, SortableColor.PURPLE);
+		outputColors.set(17, SortableColor.PURPLE);
+
+		// set station parking indicators
+		outputColors.set(6, SortableColor.OFF); // TODO: station.getParkingColor();
+		outputColors.set(14, SortableColor.OFF);
+		outputColors.set(18, SortableColor.OFF);
 
 		for (SortableColor sc : outputColors) {
 			sbOutput.append(sc.toHex()).append(COMMA);

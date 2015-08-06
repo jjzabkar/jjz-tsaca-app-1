@@ -6,6 +6,7 @@ public enum SortableColor {
 	GREEN("green", "00ff00"), //
 	YELLOW("yellow", "daca00"), //
 	RED("red", "ff0000"), //
+	BLUE("blue", "0000ff"), //
 	OFF("off", "000000");
 
 	private final String color;

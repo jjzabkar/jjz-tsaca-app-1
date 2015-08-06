@@ -19,11 +19,9 @@ void processHttpContentString(String s){
     fieldCounter = -1;
     while(commaIndex > 0 ){
       nextCommaIndex = s.indexOf(COMMA, nextCommaIndex + 1);
-      if(fieldCounter > 7){
-        if( nextCommaIndex > commaIndex ){
-          hexstring = s.substring(commaIndex + 1,nextCommaIndex);
-          setOnePixelNoShowHexString(fieldCounter, hexstring);
-        }
+      if( nextCommaIndex > commaIndex ){
+        hexstring = s.substring(commaIndex + 1,nextCommaIndex);
+        setOnePixelNoShowHexString(fieldCounter, hexstring);
       }
       commaIndex = nextCommaIndex;
       fieldCounter++;
