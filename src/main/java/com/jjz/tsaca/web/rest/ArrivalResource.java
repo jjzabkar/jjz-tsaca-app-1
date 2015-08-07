@@ -40,26 +40,4 @@ public class ArrivalResource {
 		return service.getArrival();
 	}
 
-	String colors[] = { "red", "yellow", "green", "purple", "white", "off" };
-	int colorIndex = 0;
-
-	/**
-	 * <code>curl http://localhost:8080/arrivals/test</code>
-	 */
-	@RequestMapping(value = "/test")
-	@Timed
-	@ResponseBody
-	public String getTest() {
-		StringBuffer sb = new StringBuffer();
-		sb.append(OneBusAwayApiArrivalsAndDeparturesService.CSV_LINE_CONSTANT_PREFIX_STATION);
-		sb.append(",abc_123,");
-		sb.append(colors[colorIndex % colors.length]);
-		sb.append(",");
-		colorIndex++;
-		sb.append(colors[colorIndex % colors.length]);
-		sb.append(",");
-		sb.append("\n");
-		return sb.toString();
-	}
-
 }

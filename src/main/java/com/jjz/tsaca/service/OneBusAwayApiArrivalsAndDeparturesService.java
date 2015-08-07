@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,6 +24,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
 import com.jjz.tsaca.domain.Arrival;
 import com.jjz.tsaca.domain.ArrivalDeparture;
@@ -75,9 +77,6 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 				myMap);
 		if (response != null && response.getData() != null && response.getData().getEntry() != null) {
 			result = response.getData().getEntry().getArrivalsAndDepartures();
-			for (ArrivalDeparture ad : result) {
-				log.debug("stopId={},\t routeId={},\t ad={}", ad.getStopId(), ad.getRouteId(), ad);
-			}
 		}
 		return result;
 	}
@@ -115,9 +114,9 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 		}
 	}
 
-	// TODO: Do the Map or AAD need to be immutable?
+	// TODO: Does AAD need to be immutable?
 	public Map<String, ArrivalDeparture> getArrivalsMap() {
-		return arrivalsMap;
+		return ImmutableMap.copyOf(arrivalsMap);
 	}
 
 	/*
@@ -158,9 +157,9 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 		}
 
 		// set spacers
-		outputColors.set(5, SortableColor.PURPLE);
-		outputColors.set(13, SortableColor.PURPLE);
-		outputColors.set(17, SortableColor.PURPLE);
+		outputColors.set(5, SortableColor.OFF);
+		outputColors.set(13, SortableColor.OFF);
+		outputColors.set(17, SortableColor.OFF);
 
 		// set station parking indicators
 		outputColors.set(6, SortableColor.OFF); // TODO: station.getParkingColor();
@@ -176,6 +175,7 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 
 	public Arrival getArrival() {
 		Arrival result = new Arrival();
+		Set<String> routeIds = obaApiRouteService.findAllRouteIds();
 		List<Station> stations = obaApiStationService.findAll();
 		for (Station s : stations) {
 			final Integer outputSlots = ObjectUtils.defaultIfNull(s.getOutputSlots(), new Integer(4));
@@ -189,22 +189,27 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 				aad.setColor(color);
 				aad.setMyEstimatedBoardableTime(myEstimatedBoardableTime);
 			}
+			aadListForStation = getOnlyRoutesICareAbout(aadListForStation, routeIds);
 			aadListForStation.sort(sortByColorThenBoardableTimeComparator);
 
 			for (int i = 0; i < outputSlots; i++) {
 				if (i < aadListForStation.size()) {
-					final ArrivalDeparture aad = aadListForStation.get(i);
-					final SortableColor color = aad.getColor();
-					final Date myEstimatedBoardableTime = aad.getMyEstimatedBoardableTime();
-					log.debug("color={}\t myEstimatedBoardableTime={}\t routeId={}\t stopId={}", color, myEstimatedBoardableTime,
-							aad.getRouteId(), s.getStopId());
-					log.debug("\tStop  Page: {}", obaApiStationService.getUrlForStopId(stopId));
-					s.getArrivals().add(aad);
+					s.getArrivals().add(aadListForStation.get(i));
 				} else {
 					ArrivalDeparture newAad = new ArrivalDeparture();
 					newAad.setColor(SortableColor.OFF);
 					s.getArrivals().add(newAad);
 				}
+			}
+		}
+		return result;
+	}
+
+	private List<ArrivalDeparture> getOnlyRoutesICareAbout(final List<ArrivalDeparture> list, final Set<String> routeIds) {
+		List<ArrivalDeparture> result = new LinkedList<ArrivalDeparture>();
+		for (ArrivalDeparture ad : list) {
+			if (!routeIds.isEmpty() && routeIds.contains(ad.getRouteId())) {
+				result.add(ad);
 			}
 		}
 		return result;

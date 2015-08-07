@@ -1,8 +1,10 @@
 package com.jjz.tsaca.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -16,6 +18,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.jjz.tsaca.config.Constants;
 import com.jjz.tsaca.domain.Route;
 import com.jjz.tsaca.repository.RouteRepository;
@@ -48,9 +52,19 @@ public class OneBusAwayApiRouteService {
 	@Cacheable(value = Constants.OBA_ROUTE_SERVICE_CACHE_NAME, key = "'findAll'")
 	public List<Route> findAll() {
 		// Cannot return lambda map since duplicate routeIds allowed
-		return routeRepository.findAll();
+		return ImmutableList.copyOf(routeRepository.findAll());
 	}
 	
+	@Cacheable(value = Constants.OBA_ROUTE_SERVICE_CACHE_NAME, key = "'findAllRouteIds'")
+	public Set<String> findAllRouteIds() {
+		final Set<String> result = new HashSet<>();
+		final List<Route> routes = routeRepository.findAll();
+		for (Route route : routes) {
+			result.add(route.getRouteId());
+		}
+		return ImmutableSet.copyOf(result);
+	}
+
 	@CacheEvict(Constants.OBA_ROUTE_SERVICE_CACHE_NAME)
 	public Route save(Route route) {
 		Map<String, Object> myMap = new HashMap<>();
