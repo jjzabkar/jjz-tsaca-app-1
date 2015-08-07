@@ -12,8 +12,13 @@ int nextCommaIndex = -1;
 String hexstring ;
 int fieldCounter = 0;
 
+/**
+ * This method consumes 490 bytes of RAM at runtime.
+ */
 void processHttpContentString(String s){
   if (s.startsWith(STATION)){
+    if(Serial) Serial.println(F("processHttpContentString"));
+    printFreeMemory();
     commaIndex = s.indexOf(COMMA);
     nextCommaIndex = -1;
     fieldCounter = -1;
@@ -28,6 +33,9 @@ void processHttpContentString(String s){
       commaIndex = nextCommaIndex;
       fieldCounter++;
     }
+    if(Serial) Serial << F("Processed ") << fieldCounter << F(" px");
+    printFreeMemory();
     showPixels();
+//    printFreeMemory();
   }
 }
