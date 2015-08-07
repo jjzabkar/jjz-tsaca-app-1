@@ -196,9 +196,7 @@ public class OneBusAwayApiArrivalsAndDeparturesService {
 				if (i < aadListForStation.size()) {
 					s.getArrivals().add(aadListForStation.get(i));
 				} else {
-					ArrivalDeparture newAad = new ArrivalDeparture();
-					newAad.setColor(SortableColor.OFF);
-					s.getArrivals().add(newAad);
+					s.getArrivals().add(new ArrivalDeparture(SortableColor.OFF));
 				}
 			}
 		}

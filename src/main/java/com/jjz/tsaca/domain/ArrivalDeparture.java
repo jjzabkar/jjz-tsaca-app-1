@@ -9,6 +9,9 @@ public class ArrivalDeparture extends ArrivalAndDeparture {
 	private SortableColor color;
 	private Date myEstimatedBoardableTime;
 
+	public ArrivalDeparture() {
+	}
+
 	public ArrivalDeparture(SortableColor color) {
 		this.color = color;
 	}
