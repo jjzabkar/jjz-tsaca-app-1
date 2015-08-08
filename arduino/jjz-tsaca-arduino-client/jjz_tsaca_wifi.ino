@@ -55,11 +55,13 @@ void checkConnectedToWifiNetwork(void){
 void connectToWebSite(unsigned long loopCounter, unsigned long lastRequestMillis){
   /* Try connecting to the website.  Note: HTTP/1.1 protocol is used 
      to keep the server from closing the connection before all data is read.   */
-//  Serial << DASHES << "Connecting...";
+  if(Serial) Serial.println(F("Connecting..."));
+  printFreeMemory();
   www = cc3000.connectTCP(ip, WEBSITE_PORT);
 //  Serial << "GET http://"  << WEBSITE << WEBPAGE << "\n";
   if (www.connected()) {
-//    Serial << " ...Connected.\n";
+      if(Serial) Serial.println(F(" ...Connected."));
+      printFreeMemory();
 //    www << "GET " << WEBPAGE << " HTTP/1.1\r\nHost: " << WEBSITE << "\r\n\r\n";
     www << F("GET ") << WEBPAGE << F(" HTTP/1.1\r\nHost: ") << WEBSITE << F("\r\n\r\n");
     www.println();
@@ -70,7 +72,8 @@ void connectToWebSite(unsigned long loopCounter, unsigned long lastRequestMillis
   setOnePixel(0, 0, 255, 0 ); //green
   contentLength = 0; // reset!
   charsRead = 0;
-//  Serial << DASHES << "Reading data...\n";
+  if(Serial) Serial.println(F("Reading data..."));
+  printFreeMemory();
   lastRead = millis();
   boolean doContinue = true ; 
   /* Read data until either the connection is closed, or the idle timeout is reached. */ 
