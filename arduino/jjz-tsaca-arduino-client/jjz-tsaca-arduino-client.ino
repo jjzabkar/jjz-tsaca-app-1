@@ -52,7 +52,7 @@ void setup(void)
   connectToWifiNetwork();
 //  setOnePixel(0, 0, 255, 0 ); //green
   unsigned long elapsedLoopMillis = millis() - startLoopMillis;
-  Serial << F("\n*** setup() took ") << elapsedLoopMillis << F("ms ****\r\n"); 
+  if(Serial) Serial << F("\n*** setup() took ") << elapsedLoopMillis << F("ms ****\r\n"); 
 }
 
 
@@ -69,8 +69,8 @@ void loop(void){
   doWebClientTest(loopCount, elapsedLoopMillis);
   //disconnectFromWifiNetwork();
   elapsedLoopMillis = millis() - startLoopMillis;
-  sleepTime = min(max(MIN_LOOP_TIME_MILLIS, DEFAULT_LOOP_TIME_MILLIS - elapsedLoopMillis), DEFAULT_LOOP_TIME_MILLIS);
-  Serial << F("\n*** loop(") << loopCount << F(") took ") << elapsedLoopMillis << F("ms.  Sleep for ") << sleepTime <<  F("ms  ****\n"); 
+  //sleepTime = min(max(MIN_LOOP_TIME_MILLIS, DEFAULT_LOOP_TIME_MILLIS - elapsedLoopMillis), DEFAULT_LOOP_TIME_MILLIS);
+  if(Serial) Serial << F("\n*** loop(") << loopCount << F(") took ") << elapsedLoopMillis << F("ms.  Sleep for ") << sleepTime <<  F("ms  ****\n"); 
 //  delay(sleepTime);
 }
 

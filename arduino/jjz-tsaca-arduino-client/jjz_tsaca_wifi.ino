@@ -55,16 +55,16 @@ void checkConnectedToWifiNetwork(void){
 void connectToWebSite(unsigned long loopCounter, unsigned long lastRequestMillis){
   /* Try connecting to the website.  Note: HTTP/1.1 protocol is used 
      to keep the server from closing the connection before all data is read.   */
-  if(Serial) Serial.println(F("Connecting..."));
-  printFreeMemory();
+//  if(Serial) Serial.println(F("Connecting..."));  printFreeMemory();
   www = cc3000.connectTCP(ip, WEBSITE_PORT);
 //  Serial << "GET http://"  << WEBSITE << WEBPAGE << "\n";
   if (www.connected()) {
-      if(Serial) Serial.println(F(" ...Connected."));
-      printFreeMemory();
+//    if(Serial) Serial.println(F(" ...Connected."));    printFreeMemory();
 //    www << "GET " << WEBPAGE << " HTTP/1.1\r\nHost: " << WEBSITE << "\r\n\r\n";
+    if(Serial) Serial.println(F("Send HTTP GET request...")); printFreeMemory();
     www << F("GET ") << WEBPAGE << F(" HTTP/1.1\r\nHost: ") << WEBSITE << F("\r\n\r\n");
     www.println();
+    if(Serial) Serial.println(F(" ..sent.")); printFreeMemory();
   } else {
     if(Serial) Serial.println(F("Connection failed\n"));
     return;
@@ -72,8 +72,7 @@ void connectToWebSite(unsigned long loopCounter, unsigned long lastRequestMillis
   setOnePixel(0, 0, 255, 0 ); //green
   contentLength = 0; // reset!
   charsRead = 0;
-  if(Serial) Serial.println(F("Reading data..."));
-  printFreeMemory();
+  if(Serial) Serial.println(F("Reading data...")); printFreeMemory();
   lastRead = millis();
   boolean doContinue = true ; 
   /* Read data until either the connection is closed, or the idle timeout is reached. */ 
@@ -83,8 +82,9 @@ void connectToWebSite(unsigned long loopCounter, unsigned long lastRequestMillis
       charsRead++;
       if(c == NEWLINE){
         // printFreeMemory();
-        String s;
-        s = String(httpContent);
+//        String s;
+//        s = String(httpContent);
+        String s(httpContent);
         if (s.startsWith(STATION_PFX)){
           processHttpContentString(s);
           // printFreeMemory();
