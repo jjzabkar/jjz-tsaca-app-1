@@ -18,7 +18,6 @@ int fieldCounter = 0;
 void processHttpContentString(String s){
   if (s.startsWith(STATION)){
     if(Serial) Serial.println(F("processHttpContentString"));
-    printFreeMemory();
     commaIndex = s.indexOf(COMMA);
     nextCommaIndex = -1;
     fieldCounter = -1;
@@ -33,9 +32,7 @@ void processHttpContentString(String s){
       commaIndex = nextCommaIndex;
       fieldCounter++;
     }
-    if(Serial) Serial << F("Processed ") << fieldCounter << F(" px");
-    printFreeMemory();
+    if(Serial) Serial << F("Processed ") << fieldCounter << F(" px\n");
     showPixels();
-//    printFreeMemory();
   }
 }

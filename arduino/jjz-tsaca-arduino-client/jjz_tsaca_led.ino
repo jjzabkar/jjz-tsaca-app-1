@@ -73,10 +73,7 @@ void setOnePixelNoShowHexString(int pixel, String hexstring){
 
 
 void showPixels(void){
-//  if(Serial) Serial.println("showPixels");
-  // printFreeMemory();
   strip.show();
-  // printFreeMemory();
 }
 
 

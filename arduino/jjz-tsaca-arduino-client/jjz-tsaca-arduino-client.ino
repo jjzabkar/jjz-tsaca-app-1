@@ -1,10 +1,8 @@
-//#include <MemoryFree.h>
-#include "utility/debug.h"
-
 /*
  * This module contains setup() and loop().
  * 
  */
+#include <avr/wdt.h>
 
 const unsigned long PROGMEM DEFAULT_LOOP_TIME_MILLIS = 29500;
 const unsigned long PROGMEM  MIN_LOOP_TIME_MILLIS = 5000;
@@ -14,22 +12,13 @@ unsigned long loopCount = 0;
 template<class T> inline Print &operator <<(Print &obj, T arg) { obj.print(arg); return obj; }
 
 
-//#include "Adafruit_CC3000_Server.h" // try to include to allow CC3000 debug
-
 void setup(void)
 {
+  wdt_disable(); //disable watchdog just in case
   unsigned long startLoopMillis = millis();
   Serial.begin(115200);
-
-//    if(Serial){
-//      Serial << F("_CC3000_DEBUG =") << _CC3000_DEBUG << F("\n");
-//      Serial << F("DEBUG_MODE    =") << DEBUG_MODE << F("\n");
-//    }
-
-  // printFreeMemory();
   if(Serial) Serial.println(F("Setting up LEDs"));
 
-  
   ledSetup();
   // BEGIN facilitate LED parse testing
 //  processHttpContentString("STATION,000000,000000,000000,000000,000000,ff00ff,0000ff,00ff00,ff0000,000000,000000,000000,000000,ff00ff,0000ff,000000,000000,ff00ff,0000ff,daca00,ff0000,000000,000000,000000,000000,");
@@ -38,15 +27,8 @@ void setup(void)
     
   setOnePixel(0, 255, 0, 0 );  //red
 
-  // printFreeMemory();
   initializeWifi();
 
-
-
-
-Serial << F("display free ram\n");
-displayFreeRam();
-Serial << F("that should have shown a debug message.\n");
 
 
 
@@ -66,17 +48,21 @@ unsigned long startLoopMillis = -1;
 unsigned long sleepTime = -1;
 void loop(void){  
   loopCount++;
-  printFreeMemory();
   startLoopMillis = millis();
   
-
-  doWebClientTest(&loopCount, &elapsedLoopMillis);
-
+  doWebClientTest(loopCount, elapsedLoopMillis);
   
   elapsedLoopMillis = millis() - startLoopMillis;
-  //sleepTime = min(max(MIN_LOOP_TIME_MILLIS, DEFAULT_LOOP_TIME_MILLIS - elapsedLoopMillis), DEFAULT_LOOP_TIME_MILLIS);
+  sleepTime = min(max(MIN_LOOP_TIME_MILLIS, DEFAULT_LOOP_TIME_MILLIS - elapsedLoopMillis), DEFAULT_LOOP_TIME_MILLIS);
   if(Serial) Serial << F("\n*** loop(") << loopCount << F(") took ") << elapsedLoopMillis << F("ms.  Sleep for ") << sleepTime <<  F("ms  ****\n"); 
-//  delay(sleepTime);
+  delay(sleepTime);
 }
 
 
+/**
+ * Interrupt routine.  Should use neither delay() nor Serial.  No worky?
+ */
+//ISR(WDT_vect){
+//  // Include your interrupt code here.
+//  Serial.println(F("\nINTERRUPTED"));
+//}
