@@ -3,12 +3,17 @@
  * for the CC 3000 chip.
  * 
  */
- 
+
+#define _CC3000_DEBUG  1
+#define DEBUG_MODE     1
+#define ENABLE_CC3K_PRINTER 1
+#define CHECK_PRINTER 1
+
+#include "utility/debug.h"
 #include <Adafruit_CC3000.h>
 #include <ccspi.h>
 #include <SPI.h>
 #include <string.h>
-//#include "utility/debug.h"
 
 // These are the interrupt and control pins
 #define ADAFRUIT_CC3000_IRQ   3  // MUST be an interrupt pin!
@@ -17,7 +22,7 @@
 #define ADAFRUIT_CC3000_CS    10
 // Use hardware SPI for the remaining pins.  On an UNO, SCK = 13, MISO = 12, and MOSI = 11
 Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
-                                         SPI_CLOCK_DIVIDER); // you can change this clock speed but DI
+                                         SPI_CLOCK_DIVIDER, &Serial); // you can change this clock speed but DI
 Adafruit_CC3000_Client www;
 
 #define WLAN_SSID       "ZabkarN"        // cannot be longer than 32 characters!
@@ -42,37 +47,61 @@ char httpContent[200]; // buffer array for data recieve over serial port
 unsigned int contentLength = 0; // MAX= 32,767 (2^15 -1 )
 unsigned int charsRead = 0; 
 unsigned long lastRead;
+const unsigned long CONNECT_TIMEOUT_MS = 10000;
 
 
-void checkConnectedToWifiNetwork(void){
-  if(!cc3000.checkConnected()){
-    connectToWifiNetwork();
-    printFreeMemory();
-  }
-}
+void connectToWebSite(unsigned long *loopCounter, unsigned long *lastRequestMillis){
 
+//  setOnePixel(0, 255, 0, 255 ); //purple
+//  connectToWifiNetwork();
 
-void connectToWebSite(unsigned long loopCounter, unsigned long lastRequestMillis){
   /* Try connecting to the website.  Note: HTTP/1.1 protocol is used 
      to keep the server from closing the connection before all data is read.   */
-//  if(Serial) Serial.println(F("Connecting..."));  printFreeMemory();
-  www = cc3000.connectTCP(ip, WEBSITE_PORT);
-//  Serial << "GET http://"  << WEBSITE << WEBPAGE << "\n";
+  if(Serial) Serial << F("Connecting to server via TCP...       CONNECT_TIMEOUT_MS=") << CONNECT_TIMEOUT_MS;  //printFreeMemory();
+  //www = cc3000.connectTCP(ip, WEBSITE_PORT);
+
+  // Wait for connection, per: http://arduino.stackexchange.com/a/1755/11505
+  lastRead = millis();
+  do {
+      www = cc3000.connectTCP(ip, WEBSITE_PORT);
+  } while((!www.connected()) && ((millis() - lastRead) < CONNECT_TIMEOUT_MS));
+
   if (www.connected()) {
 //    if(Serial) Serial.println(F(" ...Connected."));    printFreeMemory();
-//    www << "GET " << WEBPAGE << " HTTP/1.1\r\nHost: " << WEBSITE << "\r\n\r\n";
-    if(Serial) Serial.println(F("Send HTTP GET request...")); printFreeMemory();
-    www << F("GET ") << WEBPAGE << F(" HTTP/1.1\r\nHost: ") << WEBSITE << F("\r\n\r\n");
-    www.println();
+    if(Serial) Serial.println(F(" ... Connected. \nSend HTTP GET request...")); printFreeMemory();
+
+    www.fastrprint(F("GET "));
+    delay(5);
+    www.fastrprint(WEBPAGE);
+    delay(5);
+    www.fastrprint(F(" HTTP/1.1\r\nHost: "));
+    delay(5);
+    www.fastrprint(WEBSITE);
+    delay(5);
+    www.fastrprint(F("\r\n\r\n"));
+    delay(5);
+    
+//    www << F("GET ") << WEBPAGE << F(" HTTP/1.1\r\nHost: ") << WEBSITE << F("\r\n\r\n");
+//    www.println();
+
     if(Serial) Serial.println(F(" ..sent.")); printFreeMemory();
   } else {
-    if(Serial) Serial.println(F("Connection failed\n"));
+    if(Serial) Serial.println(F("Connection failed\n")); printFreeMemory();
+
+//    if(Serial) Serial << F("TODO: call disconnectFromWifiNetwork here 1??????????????\n");
+//    if(Serial) Serial.println(F("Closing TCP connection..."));
+//    www.close();
+//    if(Serial) Serial.println(F(" ... closed TCP connection.")); printFreeMemory();
+//
+//    Serial.println(F("Disconnect... "));
+//    cc3000.disconnect();
+    
     return;
   }
+  if(Serial) Serial.println(F("Reading data...")); printFreeMemory();
   setOnePixel(0, 0, 255, 0 ); //green
   contentLength = 0; // reset!
   charsRead = 0;
-  if(Serial) Serial.println(F("Reading data...")); printFreeMemory();
   lastRead = millis();
   boolean doContinue = true ; 
   /* Read data until either the connection is closed, or the idle timeout is reached. */ 
@@ -90,7 +119,7 @@ void connectToWebSite(unsigned long loopCounter, unsigned long lastRequestMillis
           // printFreeMemory();
           // pre-emptively close the stream to see if we can beat 10500ms (falls to ~680ms)
           // PROBLEM: When pre-emptively calling 'www.close()', Arduino stops responding after 1 hour 
-          // www.close();
+          www.close();
           doContinue = false ;
         }
         // reset httpContent to null char
@@ -108,70 +137,138 @@ void connectToWebSite(unsigned long loopCounter, unsigned long lastRequestMillis
     Serial.println(F("lastRead timed out"));
       // printFreeMemory();
   }
-  // printFreeMemory();
-  Serial.println(F("\nclosing..."));
-  // printFreeMemory();
-  www.close();
-  Serial.println(F(" ...closed."));
-  // printFreeMemory();
-//  Serial << "\nDone Reading data." << DASHES;
+  
+
+//  if(Serial) Serial << F("TODO: call disconnectFromWifiNetwork here 2??????????????\n");
+//  // printFreeMemory();
+//  Serial.println(F("\nclosing..."));
+//  // printFreeMemory();
+//  www.close();
+//  Serial.println(F(" ...closed."));
+//  printFreeMemory();
+////  Serial << "\nDone Reading data." << DASHES;
+//
+//  /* You need to make sure to clean up after yourself or the CC3000 can freak out */
+//  /* the next time your try to connect ... */
+//  Serial.println(F("Disconnect... "));
+//  cc3000.disconnect();
+//  Serial.println(F(" ...Disconnected."));
+//  printFreeMemory();
+
+
 }
 
 
-void doWebClientTest(unsigned long loopCounter, unsigned long lastRequestMillis){
-  if ((loopCounter % 20) == 0){
-    ip = 0;
-    if(Serial) Serial.println(F("Try looking up the website's IP address by Host Name"));
-  }
+void doWebClientTest(unsigned long *loopCounter, unsigned long *lastRequestMillis){
+  if(Serial) Serial.println(F("doWebClientTest"));
+
+  connectToWifiNetwork(); 
+
+  resolveIPAddress();
+
+  connectToWebSite(loopCounter, lastRequestMillis);
+
+  disconnectFromWifiNetwork();
+}
+
+
+void resolveIPAddress(void){
+  if(Serial) Serial.println(F("resolveIpAddress()"));
+//  if ((loopCounter % 20) == 0){
+//    ip = 0;
+//    if(Serial) Serial.println(F("Try looking up the website's IP address by Host Name"));
+//  }
 //  Serial << WEBSITE << " -> ";
   while (ip == 0) {
+    if(Serial) Serial.println(F("\nTry looking up the website's IP address by Host Name"));
+    // getHostByName returns positive value on success and negative on failure
     if (! cc3000.getHostByName(WEBSITE, &ip)) {
-      if(Serial) Serial.println(F("Couldn't resolve!"));
+      if(Serial) Serial << F("\nCouldn't resolve host name ") << WEBSITE;
     }
     delay(500);
   }
-  //  cc3000.printIPdotsRev(ip);
-
-  connectToWebSite(loopCounter, lastRequestMillis);
 }
 
 
 void disconnectFromWifiNetwork(void){
+  if(Serial) Serial.println(F("disconnectFromWifiNetwork() -- SKIP THAT SHIT"));
+  return ;
+  
+  if(Serial) Serial.println(F("disconnectFromWifiNetwork()"));
+
   /* You need to make sure to clean up after yourself or the CC3000 can freak out */
   /* the next time your try to connect ... */
-  if(Serial) Serial.println(F("disconnect"));
-  cc3000.disconnect();
+  if (www != NULL && www.connected()) {
+    if(Serial) Serial.println(F("close TCP connection..."));
+    www.close();
+    if(Serial) Serial.println(F(" ... TCP socket closed."));   printFreeMemory();
+  } else {
+    if(Serial) Serial.println(F("TCP connection already closed.")); printFreeMemory();
+  }
+
+  if(cc3000.checkConnected()){
+    if(Serial) Serial.println(F("close Wifi connection..."));
+    while(!cc3000.disconnect()){
+      if(Serial) Serial.println(F("  closing Wifi connection..."));
+      delay(500);
+    }
+    if(Serial) Serial.println(F(" ... Wifi connection closed."));   printFreeMemory();
+  } else {
+    if(Serial) Serial.println(F("Wifi connection already closed.")); printFreeMemory();
+  }
+
 }
 
 
 void connectToWifiNetwork(void){
   if(Serial) Serial.println(F("connectToWifiNetwork"));
+  if(cc3000.checkConnected()){
+    if(Serial) Serial.println(F("already connected."));
+    return ; 
+  }else{
+    if(Serial) Serial << F("\nAttempting to connect to Wifi... ");
+  }
   // printFreeMemory();
-  char *ssid = WLAN_SSID;             /* Max 32 chars */
+//  char *ssid = WLAN_SSID;             /* Max 32 chars */
 //  Serial << "\nAttempting to connect to " << ssid << "... ";
   unsigned long time1 = millis();
-  if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY)) {
+  if (!cc3000.connectToAP(WLAN_SSID, WLAN_PASS, WLAN_SECURITY, 5)) {
     while(1);
   }
-  while (!cc3000.checkDHCP())
-  {
-    delay(100); // ToDo: Insert a DHCP timeout!
-  }  
+//  //only required for UDP?
+//  while (!cc3000.checkDHCP())
+//  {
+//    delay(100); // ToDo: Insert a DHCP timeout!
+//  }  
+
   if(Serial) Serial << F("Connected! (") << ( millis() - time1 ) << ("ms)\n");
   // printFreeMemory();
-
+ 
 }
 
 
+//extern Print* CC3KPrinter; // NOWORKY
 void initializeWifi(void){
-  if(Serial) Serial.println(F("\nInitialising the CC3000 ... "));
+  
+  if(Serial){ 
+    Serial.println(F("\nInitialising the CC3000 ... "));
+//    CC3KPrinter = &Serial; // NOWORKY
+//    cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT, SPI_CLOCK_DIVIDER, &Serial);
+//    cc3000.setPrinter( &Serial ); // NOWORKY
+//  }else{
+//    cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT, SPI_CLOCK_DIVIDER);
+  }
+  
   if (!cc3000.begin())
   // 'begin(boolean,boolean)' is for re-using the stored Wifi config.
 //  if (!cc3000.begin(false, true))
   {
     while(1);
   }
-  if(Serial) Serial.println(F(" ...done.\n"));
+  setStaticIpAddress();
+  if(Serial) Serial.println(F(" ...wifi setup done.\n"));
+
+
 }
 
 
@@ -185,5 +282,6 @@ void setStaticIpAddress(void){
   }
 //  Serial << "\nSet Static IP Address to 192.168.1.19";
 }
+
 
 
